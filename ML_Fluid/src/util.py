@@ -3,6 +3,7 @@ import pickle
 import os 
 import logging 
 from scipy import io
+import numpy as np 
 import joblib
 logging.basicConfig(level=logging.WARNING)
 
@@ -73,6 +74,17 @@ def reset_dir(path_dir):
         # shutil.rmtree(path_dir)
         # os.makedirs(path_dir)
         print("Reset directory ", path_dir)
+
+def split_training_testing( data, training_length, axis ): 
+    """
+    Split numpy array on set axis
+    Raises exception if split does not result in 2 data chunks (e.g. if training length is too long)
+    """
+    [training_data, testing_data] = np.split( data, [training_length], axis=axis)
+    if testing_data.shape[axis] == 0: 
+        raise Exception('training_length ({0}) must be less than size of axis ({2}) in data with size ({1})'.format(training_length, str(data.shape), axis))
+    return training_data, testing_data
+
 
 def load_mat_file( mat_fullpath, var_name='Psi_ts'):
     # loading .mat files, annoying bc the variable name is needed

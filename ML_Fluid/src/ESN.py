@@ -116,8 +116,12 @@ class EchoStateNetwork(object):
         # Initialize data vectors 
         self.u = self.data[self.initLen:self.trainLen]
         self.v_tgt = self.data[ self.initLen+1:self.trainLen+1]
-        self.v = np.zeros((self.outSize, self.trainLen-self.initLen))
+        # Initialize test data vectors
+        self.u_ = self.data[self.trainLen+1:self.trainLen+2]  # Just one data point to kick off
+        self.v_tgt_ = self.data[self.trainLen+1: self.trainLen+2+self.testLen]
+        
 
+        # self.v = np.zeros((self.outSize, self.trainLen-self.initLen))
         # Add noise to data (u) vector
         # self.input_noise = np.random.normal(0,0.01,self.u.shape)
         # self.u += self.input_noise
@@ -134,12 +138,16 @@ class EchoStateNetwork(object):
                             + (1.0-self.leaking_rate)*np.tanh( np.dot(self.Win, np.vstack((1, self.u[t].reshape(self.inSize,1))) ) \
                                                              + np.dot( self.A, self.r_t) ) \
                             + self.noise*np.random.rand(self.resSize,1) #same shape as r_t
-            
             self.r[:,t+1] = np.vstack((1,self.u[t].reshape(self.inSize,1), self.r_t)).reshape(self.inSize+self.resSize+1)
-
 
         # initialize PREDICTION reservoir state variable (to be used for esn.predict() method )
         self.predict_r_t_ = np.zeros((self.resSize, 1))  # initial PREDICTION reservoir state r_t
+
+        # clean up variables 
+        del( self.data )
+        del( self.r_t )
+        del( self.u )
+
         return 
 
     def train(self):
@@ -162,10 +170,6 @@ class EchoStateNetwork(object):
 
         # Initialize test states
         self.r_ = np.zeros((1+self.inSize+self.resSize, self.testLen+1))
-
-        # Initialize test data vectors
-        self.u_ = self.data[self.trainLen+1:self.trainLen+2]  # Just one data point to kick off
-        self.v_tgt_ = self.data[self.trainLen+1: self.trainLen+2+self.testLen]
         self.v_ = np.zeros((self.outSize, self.testLen+1))
 
         ##################
@@ -192,6 +196,10 @@ class EchoStateNetwork(object):
                 # Forcing one dimension to be actual
                 self.v_[1,t+1] = self.v_tgt_.T[1,t+1]
             self.u_ = self.v_[:,t+1].T.reshape(1,self.outSize)
+
+        # clean up variables 
+        del( self.r_t_ )
+        
         return 
 
     def predict(self, input_us, res_state=None):
