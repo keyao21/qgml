@@ -49,36 +49,6 @@ def calculate_interp_velocity_funcs(u,v):
     vxfunc = [RegularGridInterpolator((_xarr, _yarr), u[:,:,i], method='linear', bounds_error=False) for i in range(ts_max)]
     vyfunc = [RegularGridInterpolator((_xarr, _yarr), v[:,:,i], method='linear', bounds_error=False) for i in range(ts_max)]
     return vxfunc, vyfunc       
-    # vxfunc = RegularGridInterpolator((_xarr, _yarr), self.u[:,:,i], method='linear')
-    # vyfunc = RegularGridInterpolator((_xarr, _yarr), self.v[:,:,i], method='linear')
-    # x, y = np.clip(x,self.minx,self.maxx), np.clip(y,self.miny,self.maxy)
-    
-    # points = np.transpose(np.array([x, y]))
-    # outxv, outxy = vxfunc(points), vyfunc(points)
-    # return outxv, outxy
-
-
-"""
-TODO: 
-NEED TO FIX UPDATE() 
-integrate calculate_interp_velocity_funcs()
-"""
-
-
-# def estimatedVelocity(x,y,u,v,t):
-#     minx, maxx = 0.0, 1.0
-#     miny, maxy = 0.0, 2.0
-#     xct, yct = 64, 128
-#     _xarr = np.linspace(minx,maxx,xct)
-#     _yarr = np.linspace(miny,maxy,yct)
-#     i = int(t/dt)  # get index of time t
-#     print(i)
-#     vxfunc = RegularGridInterpolator((_xarr, _yarr), -u[:,:,i], method='linear')
-#     vyfunc = RegularGridInterpolator((_xarr, _yarr), v[:,:,i], method='linear')
-#     x, y = np.clip(x,minx,maxx), np.clip(y,miny,maxy)
-#     points = np.transpose(np.array([x, y]))
-#     outxv, outxy = vxfunc(points), vyfunc(points)
-#     return outxv, outxy
 
 
 def velocity_update(vfuncs, state, t, dt, x_range=(0.0,2.0), y_range=(0.0,1.0)): 
@@ -97,13 +67,6 @@ def velocity_update(vfuncs, state, t, dt, x_range=(0.0,2.0), y_range=(0.0,1.0)):
     vx, vy = vxfunc(points), vyfunc(points)
     return np.column_stack((-vx,vy))
 
-
-# # function that computes velocity of particle at each point
-# def update(state,t):
-#     x = state[:,0]
-#     y = state[:,1] 
-#     vx, vy = estimatedVelocity(x,y,u,v,t)
-#     return np.column_stack((vx,vy))
     
 def rk4(vfuncs, state_t, t, dt=0.1, x_range=(0.0,2.0), y_range=(0.0,1.0)):
     tmp_state = state_t
