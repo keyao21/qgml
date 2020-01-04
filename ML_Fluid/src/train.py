@@ -8,7 +8,7 @@ import util
 
 def train_ESN( training_data_filename, trained_model_params, trained_model_filename ): 
     """
-    Initialize and train echo state network on training data with trained model params
+    Initialize and train echo state network on training data with specific training params
     and save ESN object to file
     """
     input_data_fullpath = os.path.join( PREPROCESS_INPUT_PATH_DIR, training_data_filename)
@@ -16,7 +16,6 @@ def train_ESN( training_data_filename, trained_model_params, trained_model_filen
     esn = EchoStateNetwork(loaddata = flattened_input_data, **trained_model_params)
     esn.train()
     util.save_model( esn, os.path.join( DATA_PATH_DIR, trained_model_filename) )
-
 
 if __name__ == '__main__':
 

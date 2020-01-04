@@ -179,6 +179,69 @@ CONFIGS = {
             'ftle_path_dir' : 'qgsf.{0}.{1}.est'.format(64, 128),
             'ftle_animation_filename' : 'qgsf.{0}.{1}.est.gif'.format(64, 128),
         }  
+    },
+
+
+    'QGds02di02dm02p3.actual' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.actual', 
+            'velocity_filename' : 'QGds02di02dm02p3.uv.actual',
+            'velocity_func_filename' : 'QGds02di02dm02p3.uvinterp.actual'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 2,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.uvinterp.actual',
+            'mapping_path_dir': 'QGds02di02dm02p3.actual'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.actual',
+            'ftle_path_dir' : 'QGds02di02dm02p3.actual'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.actual',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.actual.gif',
+        }
+    },
+
+    'QGds02di02dm02p3.est' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.est', 
+            'velocity_filename' : 'QGds02di02dm02p3.uv.est',
+            'velocity_func_filename' : 'QGds02di02dm02p3.uvinterp.est'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 2,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.uvinterp.est',
+            'mapping_path_dir': 'QGds02di02dm02p3.est'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.est',
+            'ftle_path_dir' : 'QGds02di02dm02p3.est'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.est',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.est.gif',
+        }
     }
 
 

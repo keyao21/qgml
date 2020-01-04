@@ -30,7 +30,7 @@ def save_data( _object, fullpath ):
 
 def load_model( fullpath ): 
     """load saved ESNs"""
-    model = joblib.load(filename)
+    model = joblib.load(fullpath)
     return model 
 
 def save_model( _object, fullpath ): 
@@ -84,7 +84,6 @@ def split_training_testing( data, training_length, axis ):
     if testing_data.shape[axis] == 0: 
         raise Exception('training_length ({0}) must be less than size of axis ({2}) in data with size ({1})'.format(training_length, str(data.shape), axis))
     return training_data, testing_data
-
 
 def load_mat_file( mat_fullpath, var_name='Psi_ts'):
     # loading .mat files, annoying bc the variable name is needed

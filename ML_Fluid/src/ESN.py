@@ -12,7 +12,7 @@ import config
 import util
 
 class EchoStateNetwork(object):
-    def __init__(self, loaddata, trainLen=3000, testLen=2000, initLen=0, resSize=300, partial_know=True, noise=0, 
+    def __init__(self, loaddata, initLen=0, resSize=300, partial_know=True, noise=0, 
                 density=0.05, spectral_radius=1.0, leaking_rate=0.0, input_scaling=1.0, ridgeReg=0, mute=False):
         """
         Notes:
@@ -28,9 +28,6 @@ class EchoStateNetwork(object):
         r    : 1+inSize+resSize x T
         """
 
-        self.initLen = initLen
-        self.trainLen = trainLen
-        self.testLen = testLen
         if type(loaddata)==np.ndarray:
             self.data = loaddata
         else:
@@ -38,6 +35,9 @@ class EchoStateNetwork(object):
         logging.info('Loaded data with size ', np.shape(self.data))
         if max(self.data.shape) != self.data.shape[0]: 
             logging.warning("First dimension is not the largest, make sure it is the time dimension")
+            logging.warning("self.data is shape {0}".format( str(self.data.shape)))
+        self.initLen = initLen
+        self.trainLen = self.data.shape[0]-1
         self.inSize = self.outSize = self.data.shape[1]   # assuming same number of input and output dims
         self.resSize = resSize
         self.partial_know =  partial_know
@@ -114,12 +114,8 @@ class EchoStateNetwork(object):
         self.r = np.zeros((1+self.inSize+self.resSize, self.trainLen-self.initLen+1)) 
 
         # Initialize data vectors 
-        self.u = self.data[self.initLen:self.trainLen]
-        self.v_tgt = self.data[ self.initLen+1:self.trainLen+1]
-        # Initialize test data vectors
-        self.u_ = self.data[self.trainLen+1:self.trainLen+2]  # Just one data point to kick off
-        self.v_tgt_ = self.data[self.trainLen+1: self.trainLen+2+self.testLen]
-        
+        self.u = self.data[self.initLen : self.trainLen]
+        self.v_tgt = self.data[ self.initLen+1 : self.trainLen+1]
 
         # self.v = np.zeros((self.outSize, self.trainLen-self.initLen))
         # Add noise to data (u) vector
@@ -164,10 +160,17 @@ class EchoStateNetwork(object):
 
         return
 
-    def test(self):
+    def test(self, testing_data):
         """Test on actual data using trained model"""
         logging.info("Testing...")
 
+
+        # Initialize test data vectors
+        self.testLen = testing_data.shape[0]
+        self.u_ = testing_data[:1]  # Just one data point to kick off
+        self.v_tgt_ = testing_data[1 : self.testLen+1]
+
+        
         # Initialize test states
         self.r_ = np.zeros((1+self.inSize+self.resSize, self.testLen+1))
         self.v_ = np.zeros((self.outSize, self.testLen+1))
@@ -199,7 +202,7 @@ class EchoStateNetwork(object):
 
         # clean up variables 
         del( self.r_t_ )
-        
+
         return 
 
     def predict(self, input_us, res_state=None):
@@ -318,7 +321,7 @@ if __name__ == '__main__':
                                            .replace('.','') 
 
     esn = EchoStateNetwork(loaddata='data/dg_new.csv',
-                           trainLen=100000, testLen=50000, initLen=0,
+                           initLen=0,
                            resSize=2000, noise=0.01, density=1e-3, spectral_radius=1.5,
                            leaking_rate=0.1, input_scaling=0.6, ridgeReg=10,
                            mute=False)
