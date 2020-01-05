@@ -51,7 +51,7 @@ def calculate_interp_velocity_funcs(u,v):
     return vxfunc, vyfunc       
 
 
-def velocity_update(vfuncs, state, t, dt, x_range=(0.0,2.0), y_range=(0.0,1.0)): 
+def velocity_update(vfuncs, state, t, dt, x_range=(0.0,2.0), y_range=(0.0,2.0)): 
     """
     computes velocity of particle at state and time
     vfuncs: tuple of list of interp velocity field function objects indexed at ith time step 
@@ -68,16 +68,23 @@ def velocity_update(vfuncs, state, t, dt, x_range=(0.0,2.0), y_range=(0.0,1.0)):
     return np.column_stack((-vx,vy))
 
     
-def rk4(vfuncs, state_t, t, dt=0.1, x_range=(0.0,2.0), y_range=(0.0,1.0)):
+def rk4(vfuncs, state_t, t, dt=0.1, x_range=(0.0,2.0), y_range=(0.0,2.0)):
+    """
+    vfuncs: list of interpolated velocity functions 
+    state_t: numpy array where SECOND index (e.g. state_t[:,x]) holds dimension value (x and y)
+    It is important to make sure that dt is specified based on how vfuncs was calculated 
+    (dt must be the time between each consequtive function object in vfuncs)
+    """
     tmp_state = state_t
     k1 = dt*velocity_update(vfuncs, tmp_state, t, dt, x_range, y_range )
     k2 = dt*velocity_update(vfuncs, tmp_state+0.5*k1, t+0.5*dt, dt,  x_range, y_range )
     k3 = dt*velocity_update(vfuncs, tmp_state+0.5*k2, t+0.5*dt, dt, x_range, y_range )
-    k4 = dt*velocity_update(vfuncs, tmp_state+k3, t+dt, x_range, dt, y_range )
+    k4 = dt*velocity_update(vfuncs, tmp_state+k3, t+dt, dt, x_range, y_range )
     tmp_state += (k1+2*k2+2*k3+k4)/6
-    state = np.zeros(2)
-    state[0] = np.clip(tmp_state[0], x_range[0], x_range[1] )
-    state[1] = np.clip(tmp_state[1], y_range[0], y_range[1] )
+    # import pdb;pdb.set_trace()
+    state = np.zeros(tmp_state.shape)
+    state[:,0] = np.clip(tmp_state[:,0], x_range[0], x_range[1] )
+    state[:,1] = np.clip(tmp_state[:,1], y_range[0], y_range[1] )
     #noise = B*np.random.normal(u,sigma,(L,2))
     #state[:,4:6] += noise
     return state

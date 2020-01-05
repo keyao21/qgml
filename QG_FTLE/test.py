@@ -4,7 +4,7 @@ from src.config import *
 
 def run_demo( CONFIG_KEY ): 
     os.chdir("src")
-    os.system( "python generate_streamfunction_values.py --demo {0}".format(CONFIG_KEY) )
+    os.system( "python double_gyre.py --demo {0}".format(CONFIG_KEY) )
     os.system( "python generate_velocity_fields.py --demo {0}".format(CONFIG_KEY) )
     os.system( "python generate_FTLE_mapping.py --demo {0}".format(CONFIG_KEY) )
     os.system( "python generate_FTLE_fields.py --demo {0}".format(CONFIG_KEY) )

@@ -7,8 +7,8 @@ FTLE_FIELDS_PATH_DIR = "../data/FTLEfields"
 RESULT_PATH_DIR = "../results"
 
 
-_TEST_XCT = 80
-_TEST_YCT = 40
+_TEST_XCT = 20
+_TEST_YCT = 10
 
 
 CONFIGS = { 
@@ -47,7 +47,7 @@ CONFIGS = {
             'yct': _TEST_YCT,
             'ftle_path_dir' : 'test.dgsf.{0}.{1}.actual'.format(_TEST_XCT, _TEST_YCT),
             'ftle_animation_filename' : 'test.dgsf.{0}.{1}.actual.gif'.format(_TEST_XCT, _TEST_YCT),
-        }  
+        } , 
     },
 
     'DOUBLE_GYRE_ACTUAL' : {
