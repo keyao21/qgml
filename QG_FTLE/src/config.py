@@ -18,6 +18,8 @@ CONFIGS = {
             'elapsedTime' : 20, 
             'xct': _TEST_XCT, 
             'yct': _TEST_YCT,
+            'amp': 0.2,
+            'epsilon': 0.3,
             'stream_function_filename' : 'test.dgsf.{0}.{1}.actual'.format(_TEST_XCT, _TEST_YCT)
         }, 
         'GENERATE_VELOCITY_FIELDS' : {
@@ -56,6 +58,8 @@ CONFIGS = {
             'elapsedTime' : 20, 
             'xct': 128, 
             'yct': 64,
+            'amp': 0.2,
+            'epsilon': 0.3,
             'stream_function_filename' : 'dgsf.{0}.{1}.actual'.format(128, 64)
         }, 
         'GENERATE_VELOCITY_FIELDS' : {
@@ -182,67 +186,320 @@ CONFIGS = {
     },
 
 
-    'QGds02di02dm02p3.actual' : { 
+##########################################################################################
+# quasigeo experiment configs to test ssi for changing ML params (res size and spec rad)
+    'QGds02di02dm02p3.1000.1p8.actual' : { 
         'GENERATE_VELOCITY_FIELDS' : {
-            'stream_function_filename' : 'QGds02di02dm02p3.actual', 
-            'velocity_filename' : 'QGds02di02dm02p3.uv.actual',
-            'velocity_func_filename' : 'QGds02di02dm02p3.uvinterp.actual'
+            'stream_function_filename' : 'QGds02di02dm02p3.1000.1p8.actual', 
+            'velocity_filename' : 'QGds02di02dm02p3.1000.1p8.uv.actual',
+            'velocity_func_filename' : 'QGds02di02dm02p3.1000.1p8.uvinterp.actual'
         }, 
         'GENERATE_FTLE_MAPPING' : {
             'iters' : 20, 
-            'mapped_dt' : 2,
+            'mapped_dt' : 3,
             'dt' : 0.01,
             'xct': 64, 
             'yct': 128,
-            'velocity_func_filename': 'QGds02di02dm02p3.uvinterp.actual',
-            'mapping_path_dir': 'QGds02di02dm02p3.actual'
+            'velocity_func_filename': 'QGds02di02dm02p3.1000.1p8.uvinterp.actual',
+            'mapping_path_dir': 'QGds02di02dm02p3.1000.1p8.actual'
         },
         'GENERATE_FTLE_FIELDS': {
             'iters' : 20,
             'xct': 64, 
             'yct': 128,
-            'mapping_path_dir': 'QGds02di02dm02p3.actual',
-            'ftle_path_dir' : 'QGds02di02dm02p3.actual'
+            'mapping_path_dir': 'QGds02di02dm02p3.1000.1p8.actual',
+            'ftle_path_dir' : 'QGds02di02dm02p3.1000.1p8.actual'
         }, 
         'GENERATE_FTLE_ANIMATIONS': {
             'iters' : 20,
             'xct': 64, 
             'yct': 128,
-            'ftle_path_dir' : 'QGds02di02dm02p3.actual',
-            'ftle_animation_filename' : 'QGds02di02dm02p3.actual.gif',
+            'ftle_path_dir' : 'QGds02di02dm02p3.1000.1p8.actual',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.1000.1p8.actual.gif',
         }
     },
 
-    'QGds02di02dm02p3.est' : { 
+    'QGds02di02dm02p3.1000.1p8.est' : { 
         'GENERATE_VELOCITY_FIELDS' : {
-            'stream_function_filename' : 'QGds02di02dm02p3.est', 
-            'velocity_filename' : 'QGds02di02dm02p3.uv.est',
-            'velocity_func_filename' : 'QGds02di02dm02p3.uvinterp.est'
+            'stream_function_filename' : 'QGds02di02dm02p3.1000.1p8.est', 
+            'velocity_filename' : 'QGds02di02dm02p3.1000.1p8.uv.est',
+            'velocity_func_filename' : 'QGds02di02dm02p3.1000.1p8.uvinterp.est'
         }, 
         'GENERATE_FTLE_MAPPING' : {
             'iters' : 20, 
-            'mapped_dt' : 2,
+            'mapped_dt' : 3,
             'dt' : 0.01,
             'xct': 64, 
             'yct': 128,
-            'velocity_func_filename': 'QGds02di02dm02p3.uvinterp.est',
-            'mapping_path_dir': 'QGds02di02dm02p3.est'
+            'velocity_func_filename': 'QGds02di02dm02p3.1000.1p8.uvinterp.est',
+            'mapping_path_dir': 'QGds02di02dm02p3.1000.1p8.est'
         },
         'GENERATE_FTLE_FIELDS': {
             'iters' : 20,
             'xct': 64, 
             'yct': 128,
-            'mapping_path_dir': 'QGds02di02dm02p3.est',
-            'ftle_path_dir' : 'QGds02di02dm02p3.est'
+            'mapping_path_dir': 'QGds02di02dm02p3.1000.1p8.est',
+            'ftle_path_dir' : 'QGds02di02dm02p3.1000.1p8.est'
         }, 
         'GENERATE_FTLE_ANIMATIONS': {
             'iters' : 20,
             'xct': 64, 
             'yct': 128,
-            'ftle_path_dir' : 'QGds02di02dm02p3.est',
-            'ftle_animation_filename' : 'QGds02di02dm02p3.est.gif',
+            'ftle_path_dir' : 'QGds02di02dm02p3.1000.1p8.est',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.1000.1p8.est.gif',
+        }
+    },
+
+
+    'QGds02di02dm02p3.1250.1p8.actual' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.1250.1p8.actual', 
+            'velocity_filename' : 'QGds02di02dm02p3.1250.1p8.uv.actual',
+            'velocity_func_filename' : 'QGds02di02dm02p3.1250.1p8.uvinterp.actual'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 3,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.1250.1p8.uvinterp.actual',
+            'mapping_path_dir': 'QGds02di02dm02p3.1250.1p8.actual'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.1250.1p8.actual',
+            'ftle_path_dir' : 'QGds02di02dm02p3.1250.1p8.actual'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.1250.1p8.actual',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.1250.1p8.actual.gif',
+        }
+    },
+
+    'QGds02di02dm02p3.1250.1p8.est' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.1250.1p8.est', 
+            'velocity_filename' : 'QGds02di02dm02p3.1250.1p8.uv.est',
+            'velocity_func_filename' : 'QGds02di02dm02p3.1250.1p8.uvinterp.est'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 3,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.1250.1p8.uvinterp.est',
+            'mapping_path_dir': 'QGds02di02dm02p3.1250.1p8.est'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.1250.1p8.est',
+            'ftle_path_dir' : 'QGds02di02dm02p3.1250.1p8.est'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.1250.1p8.est',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.1250.1p8.est.gif',
+        }
+    },
+
+
+    'QGds02di02dm02p3.2000.1p8.actual' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.2000.1p8.actual', 
+            'velocity_filename' : 'QGds02di02dm02p3.2000.1p8.uv.actual',
+            'velocity_func_filename' : 'QGds02di02dm02p3.2000.1p8.uvinterp.actual'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 3,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.2000.1p8.uvinterp.actual',
+            'mapping_path_dir': 'QGds02di02dm02p3.2000.1p8.actual'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.2000.1p8.actual',
+            'ftle_path_dir' : 'QGds02di02dm02p3.2000.1p8.actual'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.2000.1p8.actual',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.2000.1p8.actual.gif',
+        }
+    },
+
+    'QGds02di02dm02p3.2000.1p8.est' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.2000.1p8.est', 
+            'velocity_filename' : 'QGds02di02dm02p3.2000.1p8.uv.est',
+            'velocity_func_filename' : 'QGds02di02dm02p3.2000.1p8.uvinterp.est'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 3,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.2000.1p8.uvinterp.est',
+            'mapping_path_dir': 'QGds02di02dm02p3.2000.1p8.est'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.2000.1p8.est',
+            'ftle_path_dir' : 'QGds02di02dm02p3.2000.1p8.est'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.2000.1p8.est',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.2000.1p8.est.gif',
+        }
+    },
+
+    'QGds02di02dm02p3.100.1p8.actual' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.100.1p8.actual', 
+            'velocity_filename' : 'QGds02di02dm02p3.100.1p8.uv.actual',
+            'velocity_func_filename' : 'QGds02di02dm02p3.100.1p8.uvinterp.actual'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 3,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.100.1p8.uvinterp.actual',
+            'mapping_path_dir': 'QGds02di02dm02p3.100.1p8.actual'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.100.1p8.actual',
+            'ftle_path_dir' : 'QGds02di02dm02p3.100.1p8.actual'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.100.1p8.actual',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.100.1p8.actual.gif',
+        }
+    },
+
+    'QGds02di02dm02p3.100.1p8.est' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.100.1p8.est', 
+            'velocity_filename' : 'QGds02di02dm02p3.100.1p8.uv.est',
+            'velocity_func_filename' : 'QGds02di02dm02p3.100.1p8.uvinterp.est'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 3,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.100.1p8.uvinterp.est',
+            'mapping_path_dir': 'QGds02di02dm02p3.100.1p8.est'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.100.1p8.est',
+            'ftle_path_dir' : 'QGds02di02dm02p3.100.1p8.est'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.100.1p8.est',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.100.1p8.est.gif',
+        }
+    },
+
+###########################################################################################
+
+
+    'dgsf_0p01_200_128_64_0p1_0p2.actual' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'dgsf_0p01_200_128_64_0p1_0p2.actual', 
+            'velocity_filename' : 'dgsf_0p01_200_128_64_0p1_0p2.uv.actual',
+            'velocity_func_filename' : 'dgsf_0p01_200_128_64_0p1_0p2.uvinterp.actual'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 10,
+            'dt' : 0.01,
+            'xct': 128, 
+            'yct': 64,
+            'velocity_func_filename': 'dgsf_0p01_200_128_64_0p1_0p2.uvinterp.actual',
+            'mapping_path_dir': 'dgsf_0p01_200_128_64_0p1_0p2.actual'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 128, 
+            'yct': 64,
+            'mapping_path_dir': 'dgsf_0p01_200_128_64_0p1_0p2.actual',
+            'ftle_path_dir' : 'dgsf_0p01_200_128_64_0p1_0p2.actual'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 128, 
+            'yct': 64,
+            'ftle_path_dir' : 'dgsf_0p01_200_128_64_0p1_0p2.actual',
+            'ftle_animation_filename' : 'dgsf_0p01_200_128_64_0p1_0p2.actual.gif',
+        }
+    },
+
+    'dgsf_0p01_200_128_64_0p1_0p2.est' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'dgsf_0p01_200_128_64_0p1_0p2.est', 
+            'velocity_filename' : 'dgsf_0p01_200_128_64_0p1_0p2.uv.est',
+            'velocity_func_filename' : 'dgsf_0p01_200_128_64_0p1_0p2.uvinterp.est'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 10,
+            'dt' : 0.01,
+            'xct': 128, 
+            'yct': 64,
+            'velocity_func_filename': 'dgsf_0p01_200_128_64_0p1_0p2.uvinterp.est',
+            'mapping_path_dir': 'dgsf_0p01_200_128_64_0p1_0p2.est'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 128, 
+            'yct': 64,
+            'mapping_path_dir': 'dgsf_0p01_200_128_64_0p1_0p2.est',
+            'ftle_path_dir' : 'dgsf_0p01_200_128_64_0p1_0p2.est'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 128, 
+            'yct': 64,
+            'ftle_path_dir' : 'dgsf_0p01_200_128_64_0p1_0p2.est',
+            'ftle_animation_filename' : 'dgsf_0p01_200_128_64_0p1_0p2.est.gif',
         }
     }
-
-
 }

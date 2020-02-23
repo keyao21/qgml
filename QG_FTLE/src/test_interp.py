@@ -5,7 +5,7 @@ from config import *
 import numpy as np 
 import random 
 import util
-import generate_velocity_fields, generate_streamfunction_values
+import generate_velocity_fields, double_gyre
 
 class Test_interp(unittest.TestCase):
     
@@ -21,7 +21,7 @@ class Test_interp(unittest.TestCase):
         self.velocity_func_filename = CONFIGS['TESTING']['GENERATE_VELOCITY_FIELDS']['velocity_func_filename']
 
         if not os.path.exists( os.path.join(INPUT_PATH_DIR, self.stream_function_filename )):  
-            generate_streamfunction_values.generate_streamfunction_values(**CONFIGS['TESTING']['GENERATE_STREAM_FUNCTION_FIELDS'] )
+            double_gyre.generate_streamfunction_values(**CONFIGS['TESTING']['GENERATE_STREAM_FUNCTION_FIELDS'] )
             
         if not( os.path.exists( os.path.join(DISCRETE_VELOCITY_PATH_DIR, self.velocity_filename )) 
         and os.path.exists( os.path.join(INTERP_VELOCITY_PATH_DIR, self.velocity_func_filename )) ):  
@@ -35,7 +35,7 @@ class Test_interp(unittest.TestCase):
         with true double gyre velocity field values
 
         comparing functions: 
-        generate_streamfunction_values.update
+        double_gyre.update
         interp.velocity_update
         """ 
         uv_fullpath = os.path.join( DISCRETE_VELOCITY_PATH_DIR, self.velocity_filename) 
@@ -56,7 +56,7 @@ class Test_interp(unittest.TestCase):
             state_expanded_dim = np.expand_dims(state, axis=0)
             for t in np.arange(0,10,1):
                 # print( state_expanded_dim )
-                true_values = generate_streamfunction_values.update(state_expanded_dim ,t, delta= dx   )
+                true_values = double_gyre.update(state_expanded_dim ,t, delta= dx   )
                 interpolated_values = interp.velocity_update(vfuncs, state_expanded_dim, t, dt=self.dt, x_range=(0.0,reduced_xct), y_range=(0.0,reduced_yct)) 
                 # print(true_values, interpolated_values)
                 # self.assertEqual( true_values, interpolated_values )
@@ -70,7 +70,7 @@ class Test_interp(unittest.TestCase):
             state_expanded_dim = np.expand_dims(state, axis=0)
             for t in np.arange(0,10,1):
                 # print( state_expanded_dim )
-                true_values = generate_streamfunction_values.update(state_expanded_dim ,t, delta= dx   )
+                true_values = double_gyre.update(state_expanded_dim ,t, delta= dx   )
                 interpolated_values = interp.velocity_update(vfuncs, state_expanded_dim, t, dt=self.dt, x_range=(dx/2,reduced_xct-(dx/2)), y_range=(dy/2,reduced_yct-(dy/2))) 
                 # print(true_values, interpolated_values)
                 # self.assertEqual( true_values, interpolated_values )

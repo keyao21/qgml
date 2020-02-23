@@ -97,8 +97,10 @@ class EchoStateNetwork(object):
         # self.data[:,1] = self.minMaxScaler(self.data[:,1])
 
         # Initialize fixed bias (for double gyre, we know that expected range x: (0,2), y: (0,1) )
-        self.data[:,0] += -1.0
-        self.data[:,1] += -0.5
+        # self.data[:,0] += -1.0
+        # self.data[:,1] += -0.5
+
+
 
         # Initilize weights
         # self.Win = (np.random.rand(self.resSize, self.inSize+1)-0.5) * self.input_scaling  # (resSize x (inSize+1) ) added bias column
@@ -124,7 +126,6 @@ class EchoStateNetwork(object):
 
         # Normalize reservoir matrix A by spectral radius
         rhoW = max(abs(linalg.eig(self.A)[0]))
-        # import pdb;pdb.set_trace()   # DEBUGGING
         self.A *= self.spectral_radius/rhoW
 
         # Sample training states (r) data
@@ -211,8 +212,8 @@ class EchoStateNetwork(object):
         res_state : (optional) res_sizex1  (used to consequtive predictions that require previous reservoir state)
         Return t+1 step from input_u based on trained model 
         """
-        input_us[:,0] += -1.0
-        input_us[:,1] += -0.5
+        # input_us[:,0] += -1.0
+        # input_us[:,1] += -0.5
 
         if res_state :
             self.predict_r_t_ = res_state
@@ -230,8 +231,8 @@ class EchoStateNetwork(object):
             v_t_1 = np.dot( self.P, np.vstack((1, input_u.reshape(1,self.inSize).T, self.predict_r_t_ ))).reshape(self.outSize)
             output_v[i,:] = v_t_1
 
-        output_v[:,0] += 1.0
-        output_v[:,1] += 0.5
+        # output_v[:,0] += 1.0
+        # output_v[:,1] += 0.5
         return output_v
 
     def plot(self, length, name, show=False, only_test=False, dim=2):
@@ -312,7 +313,7 @@ if __name__ == '__main__':
 
     """
     Notes:
-    useful - A Practical Guide to ESNs <https://pdfs.semanticscholar.org/11bb/0941b1f6088783e26d7f9603789ee1db7faa.pdf>
+    useful - A Practical Guide to ESNs <http://minds.jacobs-university.de/uploads/papers/PracticalESN.pdf>
     """
 
     str_datetime = datetime.now().__str__().replace('-','') \
@@ -320,22 +321,22 @@ if __name__ == '__main__':
                                            .replace(':','_') \
                                            .replace('.','') 
 
-    esn = EchoStateNetwork(loaddata='data/dg_new.csv',
-                           initLen=0,
-                           resSize=2000, noise=0.01, density=1e-3, spectral_radius=1.5,
-                           leaking_rate=0.1, input_scaling=0.6, ridgeReg=10,
-                           mute=False)
+    train_input_data_fullpath = '../inputs/preprocess/QGds02di02dm02p3.TRAIN'
+    train_flattened_input_data = util.flatten_time_series( util.load_data( train_input_data_fullpath ) ).transpose()
+    esn = EchoStateNetwork(loaddata=train_flattened_input_data,initLen=0, resSize=100,partial_know=False,noise=0.01, 
+                density=1e-2,spectral_radius=1.8,leaking_rate=0.2, input_scaling=0.3, ridgeReg=0.01,mute=False)
 
-    # esn = EchoStateNetwork(loaddata='data/dg_positions_small.csv',
-    #                    trainLen=10000, testLen=10000, initLen=0,
-    #                    resSize=2000, noise=0.01, density=1e-3, spectral_radius=2.5,
-    #                    leaking_rate=0.1, input_scaling=1.0, ridgeReg=10,
-    #                    mute=False)
-
+    
     esn.train()
-    esn.test()
+    
+
+    test_input_data_fullpath = '../inputs/preprocess/QGds02di02dm02p3.TEST'
+    test_flattened_input_data = util.flatten_time_series( util.load_data( test_input_data_fullpath ) ).transpose()
+
+    import pdb;pdb.set_trace()
+    esn.test(testing_data=test_flattened_input_data[:1000])
     pdb.set_trace()
-    esn.plot(length=50000, name='{}'.format(str_datetime), show=True)
+    esn.plot(length=1000, name='{}'.format(str_datetime), show=True)
     # esn.plot(length=10000, name='{}'.format(str_datetime), show=False)
     esn.plotLorenzMap()
     esn.plotStates(length=2000)

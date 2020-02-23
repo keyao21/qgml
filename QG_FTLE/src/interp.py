@@ -63,7 +63,14 @@ def velocity_update(vfuncs, state, t, dt, x_range=(0.0,2.0), y_range=(0.0,2.0)):
     points = np.transpose(np.array([x, y]))
     
     i = int(t/dt)  # get index of time t
-    vxfunc, vyfunc = vfuncs[0][i], vfuncs[1][i]
+    
+
+
+    try: 
+        vxfunc, vyfunc = vfuncs[0][i], vfuncs[1][i]
+    except: 
+        import pdb;pdb.set_trace()
+        
     vx, vy = vxfunc(points), vyfunc(points)
     return np.column_stack((-vx,vy))
 

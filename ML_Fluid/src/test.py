@@ -42,7 +42,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=args.loglevel)
     if args.demo in CONFIGS.keys(): 
         logging.debug('Only shown in debug mode')
-        test_ESN( **CONFIGS['QUASIGEO_DEMO']['TEST'] )
+        test_ESN( **CONFIGS[args.demo]['TEST'] )
     else: 
         pass
     

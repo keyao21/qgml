@@ -80,9 +80,10 @@ def generate_FTLE_animation(iters, xct, yct, ftle_path_dir, ftle_animation_filen
     plt.gca().invert_yaxis()
     # make a video
 
+    
     ftle_animation_fullpath = os.path.join( RESULT_PATH_DIR, ftle_animation_filename )
-    # ani.save( ftle_animation_fullpath )# ,writer = mywriter)
-    plt.show()
+    ani.save( ftle_animation_fullpath )# ,writer = mywriter)
+    # plt.show()
 
 
 

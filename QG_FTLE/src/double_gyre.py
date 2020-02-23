@@ -9,36 +9,33 @@ import util
 import interp
 from config import * 
 
-
-dt = 0.1
-
 # wave function that defines the characteristics of 
 # double gyre
-def phi(x,y,t):
-    A = 0.2
-    temp = A*np.sin(np.pi*f(x,t))*np.sin(np.pi*y)
+def phi(x,y,t,amp,epsilon):
+    # amp = 0.2
+    temp = amp*np.sin(np.pi*f(x,t,epsilon))*np.sin(np.pi*y)
     return temp
 
-def f(x,t):
-    epsilon = 0.3
+def f(x,t,epsilon):
+    # epsilon = 0.3
     w = np.pi/5
     temp = epsilon*np.sin(w*t)*x**2+(1-2*epsilon*np.sin(w*t))*x
     return temp
   
 # function that computes velocity of particle at each point
-def update(state,t,delta=0.001):
+def update(state,t,delta=0.001,amp=0.2,epsilon=0.3):
     x = state[:,0]
     y = state[:,1]
-    vx = (phi(x,y+delta,t)-phi(x,y-delta,t))/(2*delta)
-    vy = (phi(x+delta,y,t)-phi(x-delta,y,t))/(2*delta)
+    vx = (phi(x,y+delta,t,amp,epsilon)-phi(x,y-delta,t,amp,epsilon))/(2*delta)
+    vy = (phi(x+delta,y,t,amp,epsilon)-phi(x-delta,y,t,amp,epsilon))/(2*delta)
     return np.column_stack((-vx,vy))
 
-def rk4(state, t, dt=0.1):
+def rk4(state,t,dt=0.1,amp=0.2,epsilon=0.3):
     tmp_state = state[:,0:2]
-    k1 = dt*update(tmp_state,t)
-    k2 = dt*update(tmp_state+0.5*k1,t+0.5*dt)
-    k3 = dt*update(tmp_state+0.5*k2,t+0.5*dt)
-    k4 = dt*update(tmp_state+k3,t+dt)
+    k1 = dt*update(tmp_state,t,amp,epsilon)
+    k2 = dt*update(tmp_state+0.5*k1,t+0.5*dt,amp,epsilon)
+    k3 = dt*update(tmp_state+0.5*k2,t+0.5*dt,amp,epsilon)
+    k4 = dt*update(tmp_state+k3,t+dt,amp,epsilon)
     tmp_state += (k1+2*k2+2*k3+k4)/6
     state[:,0] = np.clip(tmp_state[:,0],0.01,2)
     state[:,1] = np.clip(tmp_state[:,1],0.01,1)
@@ -46,7 +43,9 @@ def rk4(state, t, dt=0.1):
     #state[:,4:6] += noise
     return state
 
-def generate_streamfunction_values(dt=0.1, elapsedTime=500, xct=128, yct=64, stream_function_filename=None): 
+def generate_streamfunction_values(dt=0.1, elapsedTime=500, 
+                                    xct=128, yct=64, amp=0.2,epsilon=0.3,
+                                    stream_function_filename=None): 
     # dt = 0.1
     # elapsedTime = 200
     time_steps = int(np.ceil(elapsedTime/dt))
@@ -67,7 +66,7 @@ def generate_streamfunction_values(dt=0.1, elapsedTime=500, xct=128, yct=64, str
     # create 3d structure to hold x,y values 
     sf_ts = np.zeros((xct, yct, time_steps))
     for i,t_i in enumerate(np.arange(0,elapsedTime,dt)):
-        sf_ts[xis, yis, i] = phi(xv, yv, t_i)
+        sf_ts[xis, yis, i] = phi(xv, yv, t_i, amp, epsilon)
     # print(sf_ts)
 
     saved_streamfunction_dir_fullpath = os.path.join( INPUT_PATH_DIR, stream_function_filename)
@@ -85,6 +84,13 @@ if __name__ == '__main__':
     if args.demo in CONFIGS.keys(): 
         sf_ts = generate_streamfunction_values(**CONFIGS[ args.demo ]['GENERATE_STREAM_FUNCTION_FIELDS'] )
     else: 
-        pass
+        dt = float(input("dt: "))
+        elapsedTime = float(input("elapsedTime: "))
+        xct = int(input("xct: "))
+        yct = int(input("yct: "))
+        amp = float(input("amp: "))
+        epsilon = float(input("epsilon: "))
+        stream_function_filename = input("stream_function_filename: ")
+        sf_ts = generate_streamfunction_values(dt, elapsedTime, xct, yct, amp, epsilon, stream_function_filename)
 
     
