@@ -77,7 +77,7 @@ def compare_FTLE_animation(iters, ftle_path_dirs, ftle_animation_filename, diff_
     # plt.colorbar()                              
     # plt.gca().invert_yaxis()
     # make a video
-    plt.show()
+    # plt.show()
 
     ftle_animation_fullpath = os.path.join( RESULT_PATH_DIR, ftle_animation_filename )
     ani.save( ftle_animation_fullpath )# ,writer = mywriter)
@@ -85,8 +85,9 @@ def compare_FTLE_animation(iters, ftle_path_dirs, ftle_animation_filename, diff_
 
     # print('hi') 
     plt.plot(ssi_list)
-    plt.show()
+    # plt.show()
     # input()
+    return avg_ssi
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

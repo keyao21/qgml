@@ -12,7 +12,8 @@
 #     os.system( "python test.py --demo {0}".format(CONFIG_KEY) )
 
 cd ../src
-CONFIG_KEYS='QGds02di02dm02p3.100.1p8 QGds02di02dm02p3.1250.1p8 QGds02di02dm02p3.2000.1p8'
+CONFIG_KEYS='QGds02di02dm02p3.1000.0p3'
+ # QGds02di02dm02p3.100.1p8 QGds02di02dm02p3.1250.1p8 QGds02di02dm02p3.2000.1p8'
 for CONFIG_KEY in $CONFIG_KEYS 
 do  
 	python preprocess.py --demo $CONFIG_KEY

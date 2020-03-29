@@ -50,6 +50,14 @@ def load_FTLE_field( FTLE_field_file_fullpath ):
     print('shape', FTLE.shape)        
     return FTLE
 
+def load_config_dict( config_fullpath ): 
+    # load pickled config file 
+    print('loading configs from ', config_fullpath, '...')
+    with open( config_fullpath, 'rb' ) as config_file: 
+        configs = pickle.load( config_file ) 
+    print('loaded configs!')
+    return configs 
+
 def calculate_xct_yct_ratio( xct, yct ): 
     """
     Return numerator and denominator of reduced fraction xct/yct 

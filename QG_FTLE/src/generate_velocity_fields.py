@@ -1,6 +1,6 @@
 import argparse 
 import os 
-from config import * 
+from config import *  
 import interp
 import util 
 
@@ -22,17 +22,28 @@ def generate_velocity_fields( stream_function_filename, velocity_filename, veloc
     util.save_velocity_field( uinterp, vinterp, uv_fullpath=uvinterp_fullpath)
 
 
+def tester(): 
+    print(INPUT_PATH_DIR)
+    print(_TEST_XCT)
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--demo', choices=CONFIGS.keys(), help='Keys from CONFIGS dict in config.py ')
+    parser.add_argument('--custom_config', '-c', help='path to pickled config dict')
     args = parser.parse_args()
     print( args.demo ) 
 
     if args.demo in CONFIGS.keys(): 
         generate_velocity_fields( **CONFIGS[ args.demo ]['GENERATE_VELOCITY_FIELDS'] )
+    elif args.custom_config: # read in generated config file 
+        # remember args.custom_config should be a path string 
+        custom_configs = util.load_config_dict( args.custom_config )
+        for config_id, configs in custom_configs.items(): 
+            print( config_id ) 
+            print( configs ) 
+
     else: 
         stream_function_filename = str(input("Stream function filename: "))
         velocity_filename = str(input("Discrete velocity field filename: "))

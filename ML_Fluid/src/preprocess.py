@@ -1,5 +1,5 @@
 import util 
-from config import *  
+from config import RAW_INPUT_PATH_DIR, PREPROCESS_INPUT_PATH_DIR, PREPROCESS_INPUT_PATH_DIR, CONFIGS
 import os 
 import argparse 
 import logging 
@@ -36,7 +36,6 @@ def preprocess_numpy_input_data( sf_filename, training_length, training_data_fil
     train_data, test_data = util.split_training_testing( data, training_length=training_length+1, axis=2)
     util.save_data( train_data, preprocessed_training_file_fullpath )
     util.save_data( test_data, preprocessed_testing_file_fullpath )
-
 
 if __name__ == '__main__':
 

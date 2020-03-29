@@ -1,10 +1,12 @@
-INPUT_PATH_DIR = "../inputs"
+import os 
+
+INPUT_PATH_DIR = os.path.abspath("../inputs")
 # DATA_PATH_DIR = "D:/Documents/Thesis/QG_FTLE/data"
-DISCRETE_VELOCITY_PATH_DIR = "../data/discrete_velocity_fields"
-INTERP_VELOCITY_PATH_DIR = "../data/interp_velocity_fields"
-FTLE_MAPPING_PATH_DIR = "../data/FTLEmapping"
-FTLE_FIELDS_PATH_DIR = "../data/FTLEfields"
-RESULT_PATH_DIR = "../results"
+DISCRETE_VELOCITY_PATH_DIR = os.path.abspath("../data/discrete_velocity_fields")
+INTERP_VELOCITY_PATH_DIR = os.path.abspath("../data/interp_velocity_fields")
+FTLE_MAPPING_PATH_DIR = os.path.abspath("../data/FTLEmapping")
+FTLE_FIELDS_PATH_DIR = os.path.abspath("../data/FTLEfields")
+RESULT_PATH_DIR = os.path.abspath("../results")
 
 
 _TEST_XCT = 20
@@ -200,6 +202,7 @@ CONFIGS = {
             'dt' : 0.01,
             'xct': 64, 
             'yct': 128,
+            # Davis wuz here!!
             'velocity_func_filename': 'QGds02di02dm02p3.1000.1p8.uvinterp.actual',
             'mapping_path_dir': 'QGds02di02dm02p3.1000.1p8.actual'
         },
@@ -437,6 +440,133 @@ CONFIGS = {
             'ftle_animation_filename' : 'QGds02di02dm02p3.100.1p8.est.gif',
         }
     },
+
+    'QGds02di02dm02p3.10000.1p8.actual' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.10000.1p8.actual', 
+            'velocity_filename' : 'QGds02di02dm02p3.10000.1p8.uv.actual',
+            'velocity_func_filename' : 'QGds02di02dm02p3.10000.1p8.uvinterp.actual'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 3,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.10000.1p8.uvinterp.actual',
+            'mapping_path_dir': 'QGds02di02dm02p3.10000.1p8.actual'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.10000.1p8.actual',
+            'ftle_path_dir' : 'QGds02di02dm02p3.10000.1p8.actual'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.10000.1p8.actual',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.10000.1p8.actual.gif',
+        }
+    },
+
+    'QGds02di02dm02p3.10000.1p8.est' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.10000.1p8.est', 
+            'velocity_filename' : 'QGds02di02dm02p3.10000.1p8.uv.est',
+            'velocity_func_filename' : 'QGds02di02dm02p3.10000.1p8.uvinterp.est'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 3,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.10000.1p8.uvinterp.est',
+            'mapping_path_dir': 'QGds02di02dm02p3.10000.1p8.est'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.10000.1p8.est',
+            'ftle_path_dir' : 'QGds02di02dm02p3.10000.1p8.est'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.10000.1p8.est',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.10000.1p8.est.gif',
+        }
+    },
+###########################################################################################
+# testing spectral radius 
+
+    'QGds02di02dm02p3.1000.0p3.actual' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.1000.0p3.actual', 
+            'velocity_filename' : 'QGds02di02dm02p3.1000.0p3.uv.actual',
+            'velocity_func_filename' : 'QGds02di02dm02p3.1000.0p3.uvinterp.actual'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 3,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.1000.0p3.uvinterp.actual',
+            'mapping_path_dir': 'QGds02di02dm02p3.1000.0p3.actual'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.1000.0p3.actual',
+            'ftle_path_dir' : 'QGds02di02dm02p3.1000.0p3.actual'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.1000.0p3.actual',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.1000.0p3.actual.gif',
+        }
+    },
+
+    'QGds02di02dm02p3.1000.0p3.est' : { 
+        'GENERATE_VELOCITY_FIELDS' : {
+            'stream_function_filename' : 'QGds02di02dm02p3.1000.0p3.est', 
+            'velocity_filename' : 'QQGds02di02dm02p3.1000.0p3.uv.est',
+            'velocity_func_filename' : 'QGds02di02dm02p3.1000.0p3.uvinterp.est'
+        }, 
+        'GENERATE_FTLE_MAPPING' : {
+            'iters' : 20, 
+            'mapped_dt' : 3,
+            'dt' : 0.01,
+            'xct': 64, 
+            'yct': 128,
+            'velocity_func_filename': 'QGds02di02dm02p3.1000.0p3.uvinterp.est',
+            'mapping_path_dir': 'QGds02di02dm02p3.1000.0p3.est'
+        },
+        'GENERATE_FTLE_FIELDS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'mapping_path_dir': 'QGds02di02dm02p3.1000.0p3.est',
+            'ftle_path_dir' : 'QGds02di02dm02p3.1000.0p3.est'
+        }, 
+        'GENERATE_FTLE_ANIMATIONS': {
+            'iters' : 20,
+            'xct': 64, 
+            'yct': 128,
+            'ftle_path_dir' : 'QGds02di02dm02p3.1000.0p3.est',
+            'ftle_animation_filename' : 'QGds02di02dm02p3.1000.0p3.est.gif',
+        }
+    },
+
 
 ###########################################################################################
 
