@@ -23,11 +23,11 @@ def switch_to_qgftle_src_dir():
 	os.chdir(QG_FTLE_fullpath)
 	sys.path.insert(0,QG_FTLE_fullpath)
 	# delete overlapping modules with same name
-	try:
-		del sys.modules['config']
-		del sys.modules['util']
-	except: 
-		pass 
+	for module_name in ['config', 'util']: 
+		try:
+			del sys.modules[module_name]
+		except: 
+			pass 
 
 def switch_to_home_dir(): 
 	os.chdir(curr_fullpath)
@@ -37,12 +37,12 @@ def switch_to_mlfluids_src_dir():
 	# delete overlapping modules with same name
 	sys.path.insert(0,ML_Fluid_fullpath)
 	# delete overlapping modules with same name
-	try:
-		del sys.modules['config']
-		del sys.modules['util']
-	except: 
-		pass 
-		
+	for module_name in ['config', 'util']: 
+		try:
+			del sys.modules[module_name]
+		except: 
+			pass 
+
 def generate_experiment_id(): 
 	# from experiment parmas create unique string to be used as key for config dicts 
 	pass
@@ -92,7 +92,7 @@ def generate_qgftle_params( stream_function_prefix ):
 	            'velocity_func_filename' : f"{stream_function_prefix}.uvinterp.{actual_flag}"
 	        }, 
 	        'GENERATE_FTLE_MAPPING' : {
-	            'iters' : 20, 
+	            'iters' : 10, 
 	            'mapped_dt' : 3,
 	            'dt' : 0.01,
 	            'xct': 64, 
@@ -102,14 +102,14 @@ def generate_qgftle_params( stream_function_prefix ):
 	            'mapping_path_dir': f"{stream_function_prefix}.{actual_flag}"
 	        },
 	        'GENERATE_FTLE_FIELDS': {
-	            'iters' : 20,
+	            'iters' : 10,
 	            'xct': 64, 
 	            'yct': 128,
 	            'mapping_path_dir': f"{stream_function_prefix}.{actual_flag}",
 	            'ftle_path_dir' : f"{stream_function_prefix}.{actual_flag}"
 	        }, 
 	        'GENERATE_FTLE_ANIMATIONS': {
-	            'iters' : 20,
+	            'iters' : 10,
 	            'xct': 64, 
 	            'yct': 128,
 	            'ftle_path_dir' : f"{stream_function_prefix}.{actual_flag}",
@@ -199,24 +199,34 @@ def run_experiment(resSize, spectral_radius):
 	# ensure correct directory
 	switch_to_qgftle_src_dir()
 	import compare_FTLE_fields 
-	ssi = compare_FTLE_fields.compare_FTLE_animation(iters=20, ftle_path_dirs=[ params_dict['GENERATE_FTLE_FIELDS']['ftle_path_dir'] 
+	ssi = compare_FTLE_fields.compare_FTLE_animation(iters=10, ftle_path_dirs=[ params_dict['GENERATE_FTLE_FIELDS']['ftle_path_dir'] 
 																			for _ , params_dict in qgftle_params_dict.items() ],
 														ftle_animation_filename=f"{stream_function_prefix}.gif")
+	switch_to_home_dir()
 	return ssi 
 
 if __name__ == '__main__':
 	
+
 	# resSize = 1000
 	# spectral_radius = 0.3
-	results = []
-	for spectral_radius in [0.3, 1.0, 1.5]:
-		for resSize in [50000, 100000]: 
-			ssi = run_experiment(resSize=resSize, spectral_radius=spectral_radius)
-			results.append([ssi, resSize, spectral_radius])
 
-	import pdb;pdb.set_trace()
+	results = []
+	for spectral_radius in [float(i*3/10.0) for i in range(1,11)]:
+		for resSize in [100,1000,10000]: 
+			try: # wrap in try except block in case of memory issues...
+				ssi = run_experiment(resSize=resSize, spectral_radius=spectral_radius)
+				results.append([ssi, resSize, spectral_radius])
+			except MemoryError:
+				print('memory error...skipping')
 
 	import pandas as pd 
 	df = pd.DataFrame(results,columns=['SSI','resSize','spectral_density'])  
 	df = df.pivot_table(values='SSI',index='spectral_density',columns='resSize')
 	df.to_clipboard()
+	df.to_csv('experiment_results.csv')
+	import pdb;pdb.set_trace()
+
+
+
+
