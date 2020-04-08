@@ -93,7 +93,7 @@ def generate_qgftle_params( stream_function_prefix ):
 	        }, 
 	        'GENERATE_FTLE_MAPPING' : {
 	            'iters' : 10, 
-	            'mapped_dt' : 3,
+	            'mapped_dt' : 5,
 	            'dt' : 0.01,
 	            'xct': 64, 
 	            'yct': 128,
@@ -205,27 +205,216 @@ def run_experiment(resSize, spectral_radius):
 	switch_to_home_dir()
 	return ssi 
 
+
+
+def run_experiment_without_ftle(resSize, spectral_radius): 
+	## Preparing parameters for entire experiment
+	## ml fluid params should link to qgftle params by  
+	## stream_function_estimated and stream_function_actual
+	trained_model_params = { 
+	    "initLen"           : 0, 
+	    "resSize"           : resSize, 
+	    "partial_know"      : False, 
+	    "noise"             : 1e-2, 
+	    "density"           : 1e-1, 
+	    "spectral_radius"   : spectral_radius, 
+	    "leaking_rate"      : 0.2, 
+	    "input_scaling"     : 0.3, 
+	    "ridgeReg"          : 0.01, 
+	    "mute"              : False 
+	}
+	training_length = 1000
+	testing_length = 3000
+	stream_function_prefix = f"QGds02di02dm02p3_{resSize}_{spectral_radius:.1f}"
+	trained_model_filename = f'{stream_function_prefix}.ESN'
+	ml_fluid_params_dict = generate_ml_fluid_params(	training_length=training_length, 
+										trained_model_params=trained_model_params,
+										testing_length=testing_length,
+										trained_model_filename=trained_model_filename,
+										stream_function_prefix=stream_function_prefix
+									)
+	qgftle_params_dict = generate_qgftle_params( stream_function_prefix=stream_function_prefix )
+
+	"""
+	1. Running ML_Fluids procedure - train a model on training data and generate 
+	and testing sample to compare. Specifically, we must
+		a. Preprocess data 
+		b. train data 
+		c. test data 
+	"""
+	# ensure correct directory
+	switch_to_mlfluids_src_dir()
+	print(os.getcwd())
+	# a. preprocessing data
+	import preprocess
+	preprocess.preprocess_input_data( **ml_fluid_params_dict['PREPROCESS'] )
+	# b. training data
+	import train 
+	train.train_ESN(**ml_fluid_params_dict['TRAIN'])
+	# c. testing data 
+	import test 
+	test.test_ESN(**ml_fluid_params_dict['TEST'])
+	switch_to_home_dir()
+
+	## COPY STREAM FUNCTION FILES OVER TO QG_FTLE INPUT DIRECTORY
+	MLFluid_streamfunction_fullpaths = [os.path.join(ML_Fluid_RESULTS_fullpath,streamfunction_filename) 
+						for _,streamfunction_filename in ml_fluid_params_dict['TEST']['output_filenames'].items()]
+	for streamfunction_fullpath in MLFluid_streamfunction_fullpaths:
+		# qgftle_streamfunction_fullpath = os.path.join(QG_FTLE_INPUTS_fullpath, os.path.basename(streamfunction_fullpath))
+		shutil.copy(streamfunction_fullpath, QG_FTLE_INPUTS_fullpath)
+
+
+	"""
+	2. Running QG_FTLE procedure **FOR BOTH estimated and actual stream function files
+	- interpolate discrete velocity fields to continuous, using them to generate ftle mappings and fields
+		a. generate velcoity fields 
+		b. generate ftle mappings 
+		c. generate ftle fields 
+	"""
+	# ensure correct directory
+	for params_key, params_dict in qgftle_params_dict.items():
+		# ensure correct directory
+		switch_to_qgftle_src_dir()
+		# a. generate velcoity fields
+		import generate_velocity_fields
+		generate_velocity_fields.generate_velocity_fields( **params_dict['GENERATE_VELOCITY_FIELDS'] )
+		# b. generate ftle mappings
+		# import generate_FTLE_mapping
+		# generate_FTLE_mapping.generate_mapping_files( **params_dict['GENERATE_FTLE_MAPPING'] )
+		# c. gerenate ftle files
+		# import generate_FTLE_fields 
+		# generate_FTLE_fields.generate_FTLE_fields( **params_dict['GENERATE_FTLE_FIELDS'] )
+	# d. compare ftle files 	
+	# ensure correct directory
+	# switch_to_qgftle_src_dir()
+	# import compare_FTLE_fields 
+	# ssi = compare_FTLE_fields.compare_FTLE_animation(iters=10, ftle_path_dirs=[ params_dict['GENERATE_FTLE_FIELDS']['ftle_path_dir'] 
+	# 																		for _ , params_dict in qgftle_params_dict.items() ],
+	# 													ftle_animation_filename=f"{stream_function_prefix}.gif")
+	# switch_to_home_dir()
+	# return ssi 
+
+
+
+def run_experiment_only_ftle(resSize, spectral_radius): 
+	## Preparing parameters for entire experiment
+	## ml fluid params should link to qgftle params by  
+	## stream_function_estimated and stream_function_actual
+	trained_model_params = { 
+	    "initLen"           : 0, 
+	    "resSize"           : resSize, 
+	    "partial_know"      : False, 
+	    "noise"             : 1e-2, 
+	    "density"           : 1e-1, 
+	    "spectral_radius"   : spectral_radius, 
+	    "leaking_rate"      : 0.2, 
+	    "input_scaling"     : 0.3, 
+	    "ridgeReg"          : 0.01, 
+	    "mute"              : False 
+	}
+	training_length = 1000
+	testing_length = 3000
+	stream_function_prefix = f"QGds02di02dm02p3_{resSize}_{spectral_radius:.1f}"
+	trained_model_filename = f'{stream_function_prefix}.ESN'
+	ml_fluid_params_dict = generate_ml_fluid_params(	training_length=training_length, 
+										trained_model_params=trained_model_params,
+										testing_length=testing_length,
+										trained_model_filename=trained_model_filename,
+										stream_function_prefix=stream_function_prefix
+									)
+	qgftle_params_dict = generate_qgftle_params( stream_function_prefix=stream_function_prefix )
+
+	"""
+	1. Running ML_Fluids procedure - train a model on training data and generate 
+	and testing sample to compare. Specifically, we must
+		a. Preprocess data 
+		b. train data 
+		c. test data 
+	"""
+	# # ensure correct directory
+	# switch_to_mlfluids_src_dir()
+	# print(os.getcwd())
+	# # a. preprocessing data
+	# import preprocess
+	# preprocess.preprocess_input_data( **ml_fluid_params_dict['PREPROCESS'] )
+	# # b. training data
+	# import train 
+	# train.train_ESN(**ml_fluid_params_dict['TRAIN'])
+	# # c. testing data 
+	# import test 
+	# test.test_ESN(**ml_fluid_params_dict['TEST'])
+	# switch_to_home_dir()
+
+	# ## COPY STREAM FUNCTION FILES OVER TO QG_FTLE INPUT DIRECTORY
+	# MLFluid_streamfunction_fullpaths = [os.path.join(ML_Fluid_RESULTS_fullpath,streamfunction_filename) 
+	# 					for _,streamfunction_filename in ml_fluid_params_dict['TEST']['output_filenames'].items()]
+	# for streamfunction_fullpath in MLFluid_streamfunction_fullpaths:
+	# 	# qgftle_streamfunction_fullpath = os.path.join(QG_FTLE_INPUTS_fullpath, os.path.basename(streamfunction_fullpath))
+	# 	shutil.copy(streamfunction_fullpath, QG_FTLE_INPUTS_fullpath)
+
+
+	"""
+	2. Running QG_FTLE procedure **FOR BOTH estimated and actual stream function files
+	- interpolate discrete velocity fields to continuous, using them to generate ftle mappings and fields
+		a. generate velcoity fields 
+		b. generate ftle mappings 
+		c. generate ftle fields 
+	"""
+	# ensure correct directory
+	for params_key, params_dict in qgftle_params_dict.items():
+		# ensure correct directory
+		switch_to_qgftle_src_dir()
+		# a. generate velcoity fields
+		# import generate_velocity_fields
+		# generate_velocity_fields.generate_velocity_fields( **params_dict['GENERATE_VELOCITY_FIELDS'] )
+		# b. generate ftle mappings
+		import generate_FTLE_mapping
+		generate_FTLE_mapping.generate_mapping_files( **params_dict['GENERATE_FTLE_MAPPING'] )
+		# c. gerenate ftle files
+		import generate_FTLE_fields 
+		generate_FTLE_fields.generate_FTLE_fields( **params_dict['GENERATE_FTLE_FIELDS'] )
+	# d. compare ftle files 	
+	# ensure correct directory
+	switch_to_qgftle_src_dir()
+	import compare_FTLE_fields 
+	ssi = compare_FTLE_fields.compare_FTLE_animation(iters=10, ftle_path_dirs=[ params_dict['GENERATE_FTLE_FIELDS']['ftle_path_dir'] 
+																			for _ , params_dict in qgftle_params_dict.items() ],
+														ftle_animation_filename=f"{stream_function_prefix}.gif")
+	switch_to_home_dir()
+	return ssi 
+
+
+
+
 if __name__ == '__main__':
 	
 
 	# resSize = 1000
 	# spectral_radius = 0.3
 
-	results = []
-	for spectral_radius in [float(i*3/10.0) for i in range(1,11)]:
-		for resSize in [100,1000,10000]: 
-			try: # wrap in try except block in case of memory issues...
-				ssi = run_experiment(resSize=resSize, spectral_radius=spectral_radius)
-				results.append([ssi, resSize, spectral_radius])
-			except MemoryError:
-				print('memory error...skipping')
+	# results = []
+	# for spectral_radius in [float(i*3/10.0) for i in range(1,11)]:
+	# 	for resSize in [100,1000,10000]: 
+	# 		try: # wrap in try except block in case of memory issues...
+	# 			ssi = run_experiment(resSize=resSize, spectral_radius=spectral_radius)
+	# 			results.append([ssi, resSize, spectral_radius])
+	# 		except MemoryError:
+	# 			print('memory error...skipping')
 
-	import pandas as pd 
-	df = pd.DataFrame(results,columns=['SSI','resSize','spectral_density'])  
-	df = df.pivot_table(values='SSI',index='spectral_density',columns='resSize')
-	df.to_clipboard()
-	df.to_csv('experiment_results.csv')
-	import pdb;pdb.set_trace()
+	# import pandas as pd 
+	# df = pd.DataFrame(results,columns=['SSI','resSize','spectral_density'])  
+	# df = df.pivot_table(values='SSI',index='spectral_density',columns='resSize')
+	# df.to_clipboard()
+	# df.to_csv('experiment_results.csv')
+	# import pdb;pdb.set_trace()
+
+
+	resSize = 10000
+	spectral_radius = 3.0
+	run_experiment(resSize=resSize, spectral_radius=spectral_radius)
+	print 'done.'
+
+
 
 
 

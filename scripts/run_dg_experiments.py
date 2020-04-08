@@ -99,7 +99,7 @@ def generate_qgftle_params( stream_function_prefix ):
                 'velocity_func_filename' : f"{stream_function_prefix}.uvinterp.{actual_flag}"
             }, 
             'GENERATE_FTLE_MAPPING' : {
-                'iters' : 50, 
+                'iters' : 100, 
                 'mapped_dt' : 20,
                 'dt' : 0.1,
                 'xct': 128, 
@@ -109,14 +109,14 @@ def generate_qgftle_params( stream_function_prefix ):
                 'mapping_path_dir': f"{stream_function_prefix}.{actual_flag}"
             },
             'GENERATE_FTLE_FIELDS': {
-                'iters' : 50,
+                'iters' : 100,
                 'xct': 128, 
                 'yct': 64,
                 'mapping_path_dir': f"{stream_function_prefix}.{actual_flag}",
                 'ftle_path_dir' : f"{stream_function_prefix}.{actual_flag}"
             }, 
             'GENERATE_FTLE_ANIMATIONS': {
-                'iters' : 50,
+                'iters' : 100,
                 'xct': 128, 
                 'yct': 64,
                 'ftle_path_dir' : f"{stream_function_prefix}.{actual_flag}",
@@ -241,11 +241,11 @@ def run_ftle_experiment(stream_function_prefix):
         # ensure correct directory
         switch_to_qgftle_src_dir()
         # a. generate velcoity fields
-        import generate_velocity_fields
-        generate_velocity_fields.generate_velocity_fields( **params_dict['GENERATE_VELOCITY_FIELDS'] )
+        # import generate_velocity_fields
+        # generate_velocity_fields.generate_velocity_fields( **params_dict['GENERATE_VELOCITY_FIELDS'] )
         # b. generate ftle mappings
-        import generate_FTLE_mapping
-        generate_FTLE_mapping.generate_mapping_files( **params_dict['GENERATE_FTLE_MAPPING'] )
+        # import generate_FTLE_mapping
+        # generate_FTLE_mapping.generate_mapping_files( **params_dict['GENERATE_FTLE_MAPPING'] )
         # c. gerenate ftle files
         import generate_FTLE_fields 
         generate_FTLE_fields.generate_FTLE_fields( **params_dict['GENERATE_FTLE_FIELDS'] )
