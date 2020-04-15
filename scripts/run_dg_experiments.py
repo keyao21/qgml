@@ -147,8 +147,8 @@ def run_experiment(resSize, spectral_radius):
     testing_length = 10000
     dt = 0.05
     elapsedTime = 2100
-    xct = 128
-    yct = 64
+    xct = 400
+    yct = 200
     amp = 0.1
     epsilon = 0.2
     stream_function_prefix = f"dgsf_{dt}_{xct}_{yct}_{amp}_{epsilon}_{resSize}_{spectral_radius:.1f}"
@@ -262,8 +262,8 @@ def run_experiment_without_ftle(resSize, spectral_radius):
     testing_length = 10000
     dt = 0.05
     elapsedTime = 2100
-    xct = 128
-    yct = 64
+    xct = 300
+    yct = 150
     amp = 0.1
     epsilon = 0.2
     stream_function_prefix = f"dgsf_{dt}_{xct}_{yct}_{amp}_{epsilon}_{resSize}_{spectral_radius:.1f}"
@@ -371,7 +371,13 @@ def run_ftle_experiment(stream_function_prefix):
         b. generate ftle mappings 
         c. generate ftle fields 
     """
-    qgftle_params_dict = generate_qgftle_params( stream_function_prefix=stream_function_prefix )
+    dt = 0.05
+    xct = 400
+    yct = 200
+    mapped_dt = 20
+    iters = 10
+    qgftle_params_dict = generate_qgftle_params( stream_function_prefix=stream_function_prefix,
+                                                 mapped_dt=mapped_dt, dt=dt, iters=iters, xct=xct,yct=yct )
     # ensure correct directory
     for params_key, params_dict in qgftle_params_dict.items():
         # ensure correct directory
@@ -380,8 +386,8 @@ def run_ftle_experiment(stream_function_prefix):
         # import generate_velocity_fields
         # generate_velocity_fields.generate_velocity_fields( **params_dict['GENERATE_VELOCITY_FIELDS'] )
         # b. generate ftle mappings
-        # import generate_FTLE_mapping
-        # generate_FTLE_mapping.generate_mapping_files( **params_dict['GENERATE_FTLE_MAPPING'] )
+        import generate_FTLE_mapping
+        generate_FTLE_mapping.generate_mapping_files( **params_dict['GENERATE_FTLE_MAPPING'] )
         # c. gerenate ftle files
         import generate_FTLE_fields 
         generate_FTLE_fields.generate_FTLE_fields( **params_dict['GENERATE_FTLE_FIELDS'] )
@@ -419,9 +425,16 @@ if __name__ == '__main__':
     # import pdb;pdb.set_trace()
 
     ## RUNNING WHOLE  EXPERIMENT
-    resSize = 5000
-    spectral_radius = 2.0
-    run_experiment_without_ftle(resSize=resSize, spectral_radius=spectral_radius)
+    # resSize = 5000
+    # spectral_radius = 2.0
+
+    for spectral_radius in [1.33, 1.66, 2.0, 2.33, 2.66, 3.0, 3.33]:
+         for resSize in [5000]: 
+            # try: 
+            run_experiment_without_ftle(resSize=resSize, spectral_radius=spectral_radius)
+            # except: 
+            #     pass
+    
     import pdb;pdb.set_trace()
 
     ## RUNNING ONLY PART 1 EXPERIMENT FOR GENERATING FTLE PLOTS
