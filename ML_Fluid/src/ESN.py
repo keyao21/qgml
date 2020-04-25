@@ -159,6 +159,9 @@ class EchoStateNetwork(object):
         self.P = np.dot(np.dot(self.v_tgt.T,self.r[:,1:].T), linalg.inv(np.dot(self.r[:,1:],self.r[:,1:].T) + \
             self.ridgeReg*np.eye(1+self.inSize+self.resSize) ) )
 
+
+        # import pdb;pdb.set_trace()
+
         return
 
     def test(self, testing_data):

@@ -46,7 +46,8 @@ def generate_experiment_id():
     # from experiment parmas create unique string to be used as key for config dicts 
     pass
 
-def generate_ml_fluid_params(   training_length, trained_model_params, testing_length, trained_model_filename, stream_function_prefix,
+def generate_ml_fluid_params(   training_length, trained_model_params, testing_length, 
+                                trained_model_filename, stream_function_prefix,
                                 dt=0.1, elapsedTime=2500, xct=128, yct=64, amp=0.1, epsilon=0.2 ): 
     # params to pass into config for ML_Fluid 
     params_dict = {
@@ -258,12 +259,12 @@ def run_experiment_without_ftle(resSize, spectral_radius):
         "ridgeReg"          : 0.01, 
         "mute"              : False 
     }
-    training_length = 10000
-    testing_length = 10000
-    dt = 0.05
-    elapsedTime = 2100
-    xct = 300
-    yct = 150
+    training_length = 3000
+    testing_length = 3000
+    dt = 0.1
+    elapsedTime = 700
+    xct = 160
+    yct = 80
     amp = 0.1
     epsilon = 0.2
     stream_function_prefix = f"dgsf_{dt}_{xct}_{yct}_{amp}_{epsilon}_{resSize}_{spectral_radius:.1f}"
@@ -428,7 +429,8 @@ if __name__ == '__main__':
     # resSize = 5000
     # spectral_radius = 2.0
 
-    for spectral_radius in [1.33, 1.66, 2.0, 2.33, 2.66, 3.0, 3.33]:
+    # for spectral_radius in [1.33, 1.66, 2.0, 2.33, 2.66, 3.0, 3.33]:
+    for spectral_radius in [3.66, 4.0]:
          for resSize in [5000]: 
             # try: 
             run_experiment_without_ftle(resSize=resSize, spectral_radius=spectral_radius)

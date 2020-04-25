@@ -72,7 +72,7 @@ def generate_streamfunction_values(dt=0.1, elapsedTime=500,
     saved_streamfunction_dir_fullpath = os.path.join( INPUT_PATH_DIR, stream_function_filename)
     
     with open(saved_streamfunction_dir_fullpath, 'wb') as sf_ts_dir_file: 
-        pickle.dump(sf_ts, sf_ts_dir_file)
+        pickle.dump(sf_ts, sf_ts_dir_file, protocol=pickle.HIGHEST_PROTOCOL)
     return sf_ts
 
 
