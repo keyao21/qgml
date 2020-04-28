@@ -2,6 +2,7 @@ import unittest
 import os 
 import compare_trajectories 
 from config import * 
+import util 
 import numpy as np 
 
 class Test_compare_trajectories(unittest.TestCase):
@@ -22,11 +23,15 @@ class Test_compare_trajectories(unittest.TestCase):
 
     def test_evaluate(self): 
         list_of_state_vectors = [
-            np.array([0.24, 0.46 , 0.86, 1.23, 1.44, 1.89, 1.23, 1.03, 0.87, 0.67, 0.76, 0.91, 1.34]),
-            np.array([0.24, 0.46 , 0.86, 1.23, 1.44, 1.89, 1.23, 1.03, 0.87, 0.67, 0.76, 0.91, 1.34])
+            np.array([[0.2, 0.4], [0.5, 1.0], [0.7, 1.6]]),
+            np.array([[0.2, 0.4], [0.5, 1.0], [0.7, 1.6]])
         ]
-        res = compare_trajectories.evaluate(list_of_state_vectors,length=2.0)
-        print(res)
+        total_scores, total_observations = np.array([]), np.array([])
+        list_scores, list_observations = compare_trajectories.evaluate(list_of_state_vectors,max_lengths=[1.0, 2.0])
+        total_scores = util.add_numpy_arrays(total_scores, list_scores)
+        total_observations = util.add_numpy_arrays(total_observations, list_observations)
+        print(total_scores)
+        print(total_observations)
 
 
 

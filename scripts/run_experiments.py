@@ -483,9 +483,12 @@ if __name__ == '__main__':
     leaking_rate = 0.5
     spectral_radius = 6.0
     input_scaling = 0.1
+    ridgeReg = 0.1
+
     # for density in [0.1, 0.5]:
     #     for leaking_rate in [0.0, 0.5]:
-    for ridgeReg in [0.1, 0.01, 1.0]: 
+    # for resSize in [100, 1000, 50000]: 
+    for resSize in [20000]: 
             run_experiment_without_ftle(resSize=resSize, spectral_radius=spectral_radius, 
                                         noise=1e-2, density=density, leaking_rate=leaking_rate, 
                                         input_scaling=input_scaling, ridgeReg=ridgeReg)

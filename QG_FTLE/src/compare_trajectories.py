@@ -101,7 +101,11 @@ def run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=True):
 
     In step 2, we need a good way to compare. For now, we'll settle for just whether they're in the same gyre.  
     """
-
+    try: 
+        assert velocity_func_filenames[0][-4:] == '.est'
+        assert velocity_func_filenames[1][-7:] == '.actual'
+    except: 
+        raise Exception("Pass in an actual (.est) velocity file first and an actual (.act) velocity file second!")
 
     # TODO: factor this logic out of run_game and generate_single_trajectory
     num_samples = 20000
@@ -144,14 +148,18 @@ def run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=True):
         min_stable_ti = min(est_stable_t_i, act_stable_t_i)
 
         # note that this is only the dimension which has gyre
-        unstable_est_state_i = state[0,sample_i,:min_stable_ti,dim].copy()
-        unstable_act_state_i = state[1,sample_i,:min_stable_ti,dim].copy()
+        unstable_est_state_i = state[0,sample_i,:min_stable_ti,:].copy()
+        unstable_act_state_i = state[1,sample_i,:min_stable_ti,:].copy()
 
-        list_scores = evaluate([unstable_est_state_i, unstable_act_state_i])
-        list_observations = np.ones(list_scores.shape)
+
+        # assume x and y lengths are 2.0 and 1.0, not necessarily in that order
+        max_lengths = [1.0,2.0] if (dim==1) else [2.0,1.0]
+        list_scores, list_observations = evaluate([unstable_est_state_i, unstable_act_state_i], max_lengths=max_lengths)
+        # list_observations = np.ones(list_scores.shape)
         total_scores = util.add_numpy_arrays(total_scores, list_scores)
         total_observations = util.add_numpy_arrays(total_observations, list_observations)
     
+        # import pdb;pdb.set_trace()
 
 
         # import pdb; pdb.set_trace()
@@ -173,7 +181,7 @@ def run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=True):
     return total_scores, total_observations
 
 
-def OLD_evaluate(list_of_state_vectors, length=2.0):
+def OLD_evaluate(list_of_state_vectors, length=2.0, dim=1):
     """
     Helper function to evaluate/compare vectors 
     list_of_state_vectors is a list of *two* numpy vectors (state_vector)
@@ -198,7 +206,7 @@ def OLD_evaluate(list_of_state_vectors, length=2.0):
     return vec_func_01(multiply_state_vectors)
 
 
-def evaluate(list_of_state_vectors, length=2.0):
+def evaluate(list_of_state_vectors, max_lengths=[1.0, 2.0]):
     """
     Helper function to evaluate/compare vectors 
     list_of_state_vectors is a list of *two* numpy vectors (state_vector)
@@ -213,18 +221,41 @@ def evaluate(list_of_state_vectors, length=2.0):
           
     returns list of 0s and 1s, representing fails and passes
     """
-    normed_state_vectors = [state_vector - (length/2.) for state_vector in list_of_state_vectors]
+    dim = 0 if (max_lengths[0]>max_lengths[1]) else 1
+    # normed_state_vectors = [state_vector - (length/2.) for state_vector in list_of_state_vectors]
 
-    
+    top_midpt, bot_midpt = [0.,0.], [0.,0.]
+    top_midpt[dim] += max_lengths[dim]*0.75
+    bot_midpt[dim] += max_lengths[dim]*0.25
 
-    
-    multiply_state_vectors = normed_state_vectors[0] *normed_state_vectors[1]
-    positive_ct = len(np.where(multiply_state_vectors > 0.0)[0])
-    negative_ct = len(np.where(multiply_state_vectors < 0.0)[0])
+    top_midpt[abs(dim-1)] += max_lengths[abs(dim-1)]/2.
+    bot_midpt[abs(dim-1)] += max_lengths[abs(dim-1)]/2.
 
-    func_01 = lambda x: 0. if (x < 0.) else 1.
+    radius = 0.4
+
+    def check_in_gyre(pt): 
+        if np.sqrt( (top_midpt[0]-pt[0])**2 + (top_midpt[1]-pt[1])**2 ) < radius: 
+            return 1.
+        if np.sqrt( (bot_midpt[0]-pt[0])**2 + (bot_midpt[1]-pt[1])**2 ) < radius: 
+            return -1.
+        else:         
+            return 0.
+
+    vec_check_in_gyre = np.vectorize(check_in_gyre, signature='(i)->()')
+    actual_in_gyre = vec_check_in_gyre(list_of_state_vectors[0])
+    estimate_in_gyre = vec_check_in_gyre(list_of_state_vectors[1])
+
+    ## first calculate the number of each state_vector found a gyre 
+    # num_actual_gyre_observations = sum(abs(actual_in_gyre))
+    # num_estimate_gyre_observations = sum(abs(estimate_in_gyre))
+
+    # import pdb;pdb.set_trace() 
+
+    # calculate number of times where both states are in same gyre
+    same_gyre_observations = actual_in_gyre*estimate_in_gyre
+    func_01 = lambda x: 0. if (x <= 0.) else 1.
     vec_func_01 = np.vectorize(func_01)
-    return vec_func_01(multiply_state_vectors)
+    return vec_func_01(same_gyre_observations), abs(actual_in_gyre)
 
 
 
@@ -385,16 +416,18 @@ if __name__ == '__main__':
         dm = 0.0
         pertamp = 0.3
         dt = 0.01
-        elapsed_time = 10
+        elapsed_time = 15
         input_scaling = 0.1
+        ridgeReg = 0.1
 
-        for ridgeReg in [0.1, 0.01, 1.0]: 
+
+        for resSize in [100, 1000]:  
             qg_params_prefix = f"QGds{ds:.2f}di{di:.2f}dm{dm:.2f}p{pertamp:.1f}"
             experiment_prefix = f"{qg_params_prefix}rs{resSize}sr{spectral_radius:.1f}dens{density:.1f}lr{leaking_rate:.1f}insc{input_scaling:.1f}reg{ridgeReg:.1f}"
             velocity_func_filenames = [ f"{experiment_prefix}.uvinterp.{actual_flag}" for actual_flag in ['est', 'actual']  ]
             dim = 1
             scores,observations = run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=False)
-            all_game_res[f"ridgeReg{ridgeReg}"] = [scores,observations]
+            all_game_res[f"resSize{resSize}"] = [scores,observations]
 
         fig = plt.figure()
         for key, (scores,observations) in all_game_res.items(): plt.plot(scores/observations, label=key)

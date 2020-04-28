@@ -1,0 +1,6 @@
+local: 
+ssh -N -f -L localhost:1111:localhost:8888 cofphe@cortado.physics.cooper.edu -p 8198
+
+remote: 
+ssh cofphe@cortado.physics.cooper.edu -p 8198
+jupyter notebook --no-browser --port=8888
