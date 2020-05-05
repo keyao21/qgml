@@ -431,7 +431,7 @@ if __name__ == '__main__':
 
     # for spectral_radius in [1.33, 1.66, 2.0, 2.33, 2.66, 3.0, 3.33]:
     for spectral_radius in [2.0]:
-         for resSize in [15000]: 
+         for resSize in [13000]: 
             # try: 
             run_experiment_without_ftle(resSize=resSize, spectral_radius=spectral_radius)
             # except: 

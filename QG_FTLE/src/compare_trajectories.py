@@ -74,6 +74,27 @@ def generate_single_trajectory( velocity_func_filenames, initial_conditions,
     return state
 
 
+
+def calculate_trajectory(vfuncs_list, num_samples, elapsed_time, dt, dim): 
+    # Generate estimated trajectories
+    # state : numpy array shaped as ...
+    # ( num velocity_funcs, num_samples, time steps, num coordinates)
+    state = np.zeros(( len(vfuncs_list), num_samples, int(elapsed_time/dt)+1, 2 ))
+    for vfunc_idx, vfuncs in enumerate(vfuncs_list):
+        # set initial conditions: range of values for x, set value for y
+        # state[vfunc_idx,:,0,0] = np.linspace(0.99995, 1.0005, num_samples, np.float64)
+        # state[vfunc_idx,:,0,1] = 0.5*np.ones(num_samples, np.float64)
+        np.random.seed(0)
+        state[vfunc_idx,:,0,dim] = np.random.uniform(0.2,1.8,num_samples)
+        state[vfunc_idx,:,0,abs(dim-1)] = np.random.uniform(0.15,0.85,num_samples)
+
+        for i,t in enumerate(np.arange(0, elapsed_time, dt)):
+            # import pdb;pdb.set_trace()
+            # print( state[vfunc_idx,:,(i-max(5,i)):i,:] )
+            state[vfunc_idx,:,i+1,:] = interp.rk4(vfuncs, state[vfunc_idx,:,i,:].copy(), t, dt)
+        print('Trajectories finished.')
+    return state.copy()
+
 def run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=True): 
     """
     dim is the dimension which determines which gyre (usually 0 or 1, 0 for double gyre)
@@ -113,35 +134,20 @@ def run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=True):
     for velocity_func_filename in velocity_func_filenames:
         velocity_func_fullpath = os.path.join( INTERP_VELOCITY_PATH_DIR, velocity_func_filename)
         vfuncs_list.append( util.load_velocity_field(velocity_func_fullpath) )
-        # TODO: MULTIPLE VFUNCS PER VELOCITY_FUNC_FULLPATH
-        #!!!!
 
-    # Generate estimated trajectories
-    # state : numpy array shaped as ...
-    # ( num velocity_funcs, num_samples, time steps, num coordinates)
-    state = np.zeros(( len(velocity_func_filenames), num_samples, int(elapsed_time/dt)+1, 2 ))
-    for vfunc_idx, vfuncs in enumerate(vfuncs_list):
-        # set initial conditions: range of values for x, set value for y
-        # state[vfunc_idx,:,0,0] = np.linspace(0.99995, 1.0005, num_samples, np.float64)
-        # state[vfunc_idx,:,0,1] = 0.5*np.ones(num_samples, np.float64)
-
-        np.random.seed(0)
-        state[vfunc_idx,:,0,dim] = np.random.uniform(0.2,1.8,num_samples)
-        state[vfunc_idx,:,0,abs(dim-1)] = np.random.uniform(0.15,0.85,num_samples)
-
-        for i,t in enumerate(np.arange(0, elapsed_time, dt)):
-            # import pdb;pdb.set_trace()
-            # print( state[vfunc_idx,:,(i-max(5,i)):i,:] )
-            state[vfunc_idx,:,i+1,:] = interp.rk4(vfuncs, state[vfunc_idx,:,i,:].copy(), t, dt)
-        print('Trajectories finished.')
-
- 
-
-    # check_stable_vfunc = np.vectorize(check_stable)
+    state = calculate_trajectory(vfuncs_list, num_samples, elapsed_time, dt, dim)
 
 
-    # plt.figure()
-    total_scores, total_observations = np.array([]), np.array([])
+    # total_scores: observations where est and act position is in same gyre 
+    # total_observations: time steps where act position in a gyre 
+    # total_loops: cumulative number of loops up to each time step 
+    # total_time_steps: total time steps where particles are unstable
+
+    total_scores = np.array([])
+    total_observations = np.array([])
+    total_loops = np.array([])
+    total_time_steps = np.array([])
+
     for sample_i in range(num_samples): 
         est_stable_t_i = check_stable(state[0,sample_i,:,:])
         act_stable_t_i = check_stable(state[1,sample_i,:,:])
@@ -155,20 +161,23 @@ def run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=True):
         # assume x and y lengths are 2.0 and 1.0, not necessarily in that order
         max_lengths = [1.0,2.0] if (dim==1) else [2.0,1.0]
         list_scores, list_observations = evaluate([unstable_est_state_i, unstable_act_state_i], max_lengths=max_lengths)
-        # list_observations = np.ones(list_scores.shape)
         total_scores = util.add_numpy_arrays(total_scores, list_scores)
         total_observations = util.add_numpy_arrays(total_observations, list_observations)
     
+        list_loops = count_loops(unstable_act_state_i[:,dim])
+        list_time_steps = np.ones(unstable_act_state_i[:,dim].shape) 
+        total_loops = util.add_numpy_arrays(total_loops, list_loops)
+        total_time_steps = util.add_numpy_arrays(total_time_steps, list_time_steps)
+
+
         # import pdb;pdb.set_trace()
-
-
         # import pdb; pdb.set_trace()
         # plt.figure()
         # plt.plot(unstable_est_state_i)
         # plt.plot(unstable_act_state_i)
         # plt.show()
 
-    # import pdb;pdb.set_trace()
+    import pdb;pdb.set_trace()
 
 
 
@@ -178,7 +187,20 @@ def run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=True):
         plt.plot(total_scores/total_observations)    
         plt.show()
 
-    return total_scores, total_observations
+    return total_scores, total_observations, total_loops, total_time_steps
+
+def count_loops(state_vector): 
+    # given a state vector, count the cumulative number of "loops", or local maxima
+    from scipy.signal import argrelextrema
+    local_maximas = argrelextrema(state_vector, np.greater)[0]
+    cumulative_maximas = np.zeros(state_vector.shape)
+    for local_maxima in local_maximas: 
+        _tmp_maxima_ct = np.zeros(state_vector.shape)
+        _tmp_maxima_ct[local_maxima:] = 1.
+        cumulative_maximas += _tmp_maxima_ct
+
+    # import pdb;pdb.set_trace()
+    return cumulative_maximas
 
 
 def OLD_evaluate(list_of_state_vectors, length=2.0, dim=1):
@@ -231,7 +253,7 @@ def evaluate(list_of_state_vectors, max_lengths=[1.0, 2.0]):
     top_midpt[abs(dim-1)] += max_lengths[abs(dim-1)]/2.
     bot_midpt[abs(dim-1)] += max_lengths[abs(dim-1)]/2.
 
-    radius = 0.4
+    radius = 0.3
 
     def check_in_gyre(pt): 
         if np.sqrt( (top_midpt[0]-pt[0])**2 + (top_midpt[1]-pt[1])**2 ) < radius: 
@@ -374,7 +396,8 @@ if __name__ == '__main__':
     elif args.test == 5:
         ## DOUBLE GYRE TESTING
         all_game_res = dict()
-        for spectral_radius in [1.33, 1.66, 2.0, 2.33, 2.66, 3.0, 3.33, 3.66, 4.0]:
+        # for spectral_radius in [1.33, 1.66, 2.0, 2.33, 2.66, 3.0, 3.33, 3.66, 4.0]:
+        for spectral_radius in [2.0]:
             for resSize in [5000]: 
                 dg_params_prefix = 'dgsf_0.1_160_80_0.1_0.2'
                 experiment_prefix = f"{dg_params_prefix}_{resSize}_{spectral_radius:.1f}"
@@ -382,15 +405,23 @@ if __name__ == '__main__':
                 elapsed_time = 250
                 dt = 0.1
                 dim = 0
-                scores,observations = run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=False)
-                all_game_res[f"resSize{resSize}_spectralRadius{spectral_radius}"] = [scores,observations]
+                scores,observations,loops,time_steps = run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=False)
+                all_game_res[f"resSize{resSize}_spectralRadius{spectral_radius}"] = [scores,observations,loops,time_steps]
 
         fig = plt.figure()
-        for key, (scores,observations) in all_game_res.items(): plt.plot(scores/observations, label=key)
+        for key, (scores,observations,loops,time_steps) in all_game_res.items(): plt.plot(scores/observations, label=key)
         plt.legend(loc="best")
         plt.ylabel("% hit")
         plt.xlabel("time steps")
         import pdb;pdb.set_trace()
+
+        fig = plt.figure()
+        for key, (scores,observations,loops,time_steps) in all_game_res.items(): plt.plot(loops/time_steps, label=key)
+        plt.legend(loc="best")
+        plt.ylabel("Average number of loops")
+        plt.xlabel("time steps")
+        import pdb;pdb.set_trace()
+
 
     elif args.test == 6:
         ## QUASIGEO TESTING
@@ -426,15 +457,24 @@ if __name__ == '__main__':
             experiment_prefix = f"{qg_params_prefix}rs{resSize}sr{spectral_radius:.1f}dens{density:.1f}lr{leaking_rate:.1f}insc{input_scaling:.1f}reg{ridgeReg:.1f}"
             velocity_func_filenames = [ f"{experiment_prefix}.uvinterp.{actual_flag}" for actual_flag in ['est', 'actual']  ]
             dim = 1
-            scores,observations = run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=False)
-            all_game_res[f"resSize{resSize}"] = [scores,observations]
+            scores,observations,loops,time_steps = run_game( velocity_func_filenames, elapsed_time, dt, dim, showfig=False)
+            all_game_res[f"resSize{resSize}"] = [scores,observations,loops,time_steps]
 
         fig = plt.figure()
-        for key, (scores,observations) in all_game_res.items(): plt.plot(scores/observations, label=key)
+        for key, (scores,observations,loops,time_steps) in all_game_res.items(): plt.plot(scores/observations, label=key)
         plt.legend(loc="best")
         plt.ylabel("% hit")
         plt.xlabel("time steps")
         import pdb;pdb.set_trace()
+
+
+        fig = plt.figure()
+        for key, (scores,observations,loops,time_steps) in all_game_res.items(): plt.plot(loops/time_steps, label=key)
+        plt.legend(loc="best")
+        plt.ylabel("Average number of loops")
+        plt.xlabel("time steps")
+        import pdb;pdb.set_trace()
+
 
 
         # SMOOTH: 
@@ -443,4 +483,5 @@ if __name__ == '__main__':
 
 
 
-
+        # plt.plot(all_game_res['resSize5000_spectralRadius2.0'][0]/all_game_res['resSize5000_spectralRadius2.0'][1])
+        # plt.hlines(, xmin=0,xmax=len(all_game_res['resSize5000_spectralRadius2.0'][1]))

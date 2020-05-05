@@ -4,3 +4,36 @@ ssh -N -f -L localhost:1111:localhost:8888 cofphe@cortado.physics.cooper.edu -p 
 remote: 
 ssh cofphe@cortado.physics.cooper.edu -p 8198
 jupyter notebook --no-browser --port=8888
+
+
+=========================================================================================
+
+INSTALLING GIT 
+
+1. update GNU M4 - for some reason, there needs to be a certain version for autoconf to be downloaded
+https://geeksww.com/tutorials/libraries/m4/installation/installing_m4_macro_processor_ubuntu_linux.php
+>wget ftp://ftp.gnu.org/gnu/m4/m4-1.4.10.tar.gz
+>tar -xvzf m4-1.4.10.tar.gz
+>cd m4-1.4.10
+>./configure --prefix=/home/kevin/
+>make
+>make install
+
+2. update autoconf - this is necessary for make or something...
+https://askubuntu.com/questions/430706/installing-autotools-autoconf
+>wget http://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz 
+>tar xf autoconf*
+>cd autoconf-2.69
+>sh configure --prefix /home/kevin/
+>make install
+
+3. install git
+https://stackoverflow.com/questions/4039416/installing-git-with-non-root-user-account
+>wget https://github.com/git/git/archive/v2.6.4.tar.gz
+>tar -xf v2.6.4
+>mkdir <local_git_dir>
+>cd git-2.6.4
+>make configure
+>./configure --prefix=/home/kevin/
+>make
+>make install
