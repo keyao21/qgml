@@ -33,7 +33,8 @@ def generate_mapping_files(iters, mapped_dt, dt, xct, yct, velocity_func_filenam
     y_coords = np.linspace(shift,reduced_yct-shift,yct)
     # evolution time 0-10s, max_mapping_file_ct time steps maximum
     max_mapping_file_ct = 100
-    tau_range = np.linspace(0.0,9.9,max_mapping_file_ct)
+    # tau_range = np.linspace(0.0,9.9,max_mapping_file_ct)
+    tau_range = np.linspace(0.0,dt*(max_mapping_file_ct-1),max_mapping_file_ct)
     # x and y ranges for interp.velcoity_update() 
     x_range, y_range = (0.0, float(reduced_xct)), (0.0, float(reduced_yct) )
     # getting 100 mapping data files
@@ -48,6 +49,7 @@ def generate_mapping_files(iters, mapped_dt, dt, xct, yct, velocity_func_filenam
             y = np.linspace(y_i, y_i, xct)
             r = np.column_stack( (x,y) )
             # perform RK4 to get position of particle 20s later
+            import pdb;pdb.set_trace()
             for t in np.arange(0+tau_n,mapped_dt+tau_n,dt):
                 k1 = dt*interp.velocity_update(vfuncs, r, t, dt, x_range, y_range )
                 k2 = dt*interp.velocity_update(vfuncs, r+0.5*k1, t+0.5*dt, dt, x_range, y_range )
