@@ -168,16 +168,17 @@ class EchoStateNetwork(object):
         """Test on actual data using trained model"""
         logging.info("Testing...")
 
+        import pdb;pdb.set_trace() 
 
         # Initialize test data vectors
         self.testLen = testing_data.shape[0]
         self.u_ = testing_data[:1]  # Just one data point to kick off
-        self.v_tgt_ = testing_data[1 : self.testLen+1]
+        self.v_tgt_ = testing_data[1 : self.testLen]
 
         
         # Initialize test states
-        self.r_ = np.zeros((1+self.inSize+self.resSize, self.testLen+1))
-        self.v_ = np.zeros((self.outSize, self.testLen+1))
+        self.r_ = np.zeros((1+self.inSize+self.resSize, self.testLen))
+        self.v_ = np.zeros((self.outSize, self.testLen))
 
         ##################
         self.r_t_ = self.r[1+self.inSize:,-1].reshape(self.resSize, 1)
@@ -190,7 +191,7 @@ class EchoStateNetwork(object):
 
         # Sample test states (r) data
         # Generate estimate states and values
-        for t in range(self.testLen):
+        for t in range(self.testLen-1):
             self.r_t_ = self.leaking_rate*self.r_t_ \
                             + (1.0-self.leaking_rate)*np.tanh( np.dot(self.Win, np.vstack((1, self.u_.T)) )
                                                                 + np.dot(self.A, self.r_t_) ) \
@@ -206,6 +207,7 @@ class EchoStateNetwork(object):
 
         # clean up variables 
         del( self.r_t_ )
+        np.delete(self.v_,0,1)
 
         return 
 
