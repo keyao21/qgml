@@ -168,8 +168,6 @@ class EchoStateNetwork(object):
         """Test on actual data using trained model"""
         logging.info("Testing...")
 
-        import pdb;pdb.set_trace() 
-
         # Initialize test data vectors
         self.testLen = testing_data.shape[0]
         self.u_ = testing_data[:1]  # Just one data point to kick off
