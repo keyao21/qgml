@@ -136,26 +136,63 @@ def run_experiment(resSize, spectral_radius, noise=1e-2, density=1e-1, leaking_r
         "initLen"           : 0, 
         "resSize"           : resSize, 
         "partial_know"      : False, 
-        "noise"             : 1e-2, 
-        "density"           : 1e-1, 
+        "noise"             : noise, 
+        "density"           : density, 
         "spectral_radius"   : spectral_radius, 
-        "leaking_rate"      : 0.2, 
-        "input_scaling"     : 0.3, 
-        "ridgeReg"          : 0.01, 
+        "leaking_rate"      : leaking_rate, 
+        "input_scaling"     : input_scaling, 
+        "ridgeReg"          : ridgeReg, 
         "mute"              : False 
     }
-    training_length = 1000
-    testing_length = 3000
-    stream_function_prefix = f"QGds02di02dm02p3rs{resSize}sr{spectral_radius:.1f}dens{density:.1f}lr{leaking_rate:.1f}insc{input_scaling:.1f}reg{ridgeReg:.1f}"
+    training_length = 4000
+    testing_length = 5000
+    dt = 0.01
+    xct = 80
+    yct = 160
+    ds = 0.03
+    di = 0.0
+    dm = 0.0
+    pertamp = 0.3
+    mapped_dt = 5
+    iters = 10
+    # stream_function_prefix = f"QGds02di02dm02p3rs{resSize}sr{spectral_radius:.1f}dens{density:.1f}lr{leaking_rate:.1f}insc{input_scaling:.1f}reg{ridgeReg:.1f}"
+    stream_function_prefix = f"QGds{ds:.2f}di{di:.2f}dm{dm:.2f}p{pertamp:.1f}rs{resSize}sr{spectral_radius:.1f}dens{density:.1f}lr{leaking_rate:.1f}insc{input_scaling:.1f}reg{ridgeReg:.1f}"
+    
+    ######################################
+    print("""\n====================================================================================""")
+    print("RUNNING NEW EXPERIMENT (WITHOUT FTLE): ")
+    print("trained_model_params: ")
+    pprint(trained_model_params)
+    print("qg parameters:")
+    print(f"""
+    training_length = {training_length}
+    testing_length = {training_length}
+    dt ={dt}
+    xct = {xct}
+    yct = {yct}
+    ds = {ds}
+    di = {di}
+    dm = {dm}
+    pertamp = {pertamp}
+    mapped_dt = {mapped_dt}
+    iters = {iters}
+    """)
+    print("stream_function_prefix:")
+    print(stream_function_prefix)
+    ######################################
+
+
+
     trained_model_filename = f'{stream_function_prefix}.ESN'
     ml_fluid_params_dict = generate_ml_fluid_params(    training_length=training_length, 
                                         trained_model_params=trained_model_params,
                                         testing_length=testing_length,
                                         trained_model_filename=trained_model_filename,
-                                        stream_function_prefix=stream_function_prefix
+                                        stream_function_prefix=stream_function_prefix,
+                                        xct=xct, yct=yct, dt=dt, ds=ds, di=di, dm=dm, pertamp=pertamp
                                     )
-    mapped_dt = 5
-    iters = 10
+    
+    
     qgftle_params_dict = generate_qgftle_params( stream_function_prefix=stream_function_prefix,
                                                  mapped_dt=mapped_dt, dt=dt, iters=iters, xct=xct,yct=yct )
 
@@ -210,13 +247,17 @@ def run_experiment(resSize, spectral_radius, noise=1e-2, density=1e-1, leaking_r
         generate_FTLE_fields.generate_FTLE_fields( **params_dict['GENERATE_FTLE_FIELDS'] )
     # d. compare ftle files     
     # ensure correct directory
-    switch_to_qgftle_src_dir()
-    import compare_FTLE_fields 
-    ssi = compare_FTLE_fields.compare_FTLE_animation(iters=10, ftle_path_dirs=[ params_dict['GENERATE_FTLE_FIELDS']['ftle_path_dir'] 
-                                                                            for _ , params_dict in qgftle_params_dict.items() ],
-                                                        ftle_animation_filename=f"{stream_function_prefix}.gif")
+    # switch_to_qgftle_src_dir()
+    # import compare_FTLE_fields 
+    # ssi = compare_FTLE_fields.compare_FTLE_animation(iters=10, ftle_path_dirs=[ params_dict['GENERATE_FTLE_FIELDS']['ftle_path_dir'] 
+    #                                                                       for _ , params_dict in qgftle_params_dict.items() ],
+    #                                                   ftle_animation_filename=f"{stream_function_prefix}.gif")
     switch_to_home_dir()
-    return ssi 
+    # return ssi 
+
+    print("END OF EXPERIMENT.")
+    print("""====================================================================================\n""")
+    
 
 
 
