@@ -92,12 +92,12 @@ def load_mat_file( mat_fullpath, var_name='Psi_ts'):
     try:
         mat = io.loadmat(mat_fullpath)[var_name]
     except NotImplementedError as e: 
-        print(e)
+        print(e) 
         import h5py
-        f = h5py.File(mat_fullpath, 'r')
-        import pdb;pdb.set_trace()
-
-
+        with h5py.File(mat_fullpath, 'r') as file:
+            mat = np.asarray(file['Psi_ts'])
+            mat = mat.reshape(mat.shape[2], mat.shape[1], mat.shape[0])
+            print(f'loaded mat file, shape: {mat.shape}')
     return mat 
 
 if __name__ == '__main__':

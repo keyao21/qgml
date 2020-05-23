@@ -205,8 +205,9 @@ class EchoStateNetwork(object):
 
         # clean up variables 
         del( self.r_t_ )
-        np.delete(self.v_,0,1)
+        self.v_ = np.delete(self.v_,0,1)
 
+        # import pdb;pdb.set_trace()
         return 
 
     def predict(self, input_us, res_state=None):
