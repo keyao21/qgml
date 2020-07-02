@@ -89,3 +89,49 @@ def reset_dir(path_dir):
         # shutil.rmtree(path_dir)
         # os.makedirs(path_dir)
         print("Reset directory ", path_dir)
+
+
+def shift_numpy_array(arr, num, fill_value=np.nan):
+    """
+    Shift numpy array arr elements by num positions
+    ref: https://stackoverflow.com/questions/30399534/shift-elements-in-a-numpy-array
+    """
+    result = np.empty_like(arr)
+    if num > 0:
+        result[:num] = fill_value
+        result[num:] = arr[:-num]
+    elif num < 0:
+        result[num:] = fill_value
+        result[:num] = arr[-num:]
+    else:
+        result[:] = arr
+    return result
+
+
+def add_numpy_arrays(a,b):
+    """
+    Add two numpy arrays of different lenghts 
+    ref: https://stackoverflow.com/questions/7891697/numpy-adding-two-vectors-with-different-sizes
+    """
+    if len(a) < len(b):
+        c = b.copy()
+        c[:len(a)] += a
+    else:
+        c = a.copy()
+        c[:len(b)] += b
+    return c
+
+
+def moving_average_smooth(y, box_pts):
+    """
+    smooth lines via moving average box 
+    """
+    box = np.ones(box_pts)/box_pts
+    y_smooth = np.convolve(y, box, mode='same')
+    return y_smooth
+
+
+def stack_numpy_arrays(a,b): 
+    return np.vstack([a,b])
+    
+
