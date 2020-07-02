@@ -25,7 +25,7 @@ def save_data( _object, fullpath ):
     """
     print('Saving data to ', fullpath, '...')
     with open( fullpath , 'wb') as _file: 
-        pickle.dump( _object, _file , protocol=2)
+        pickle.dump( _object, _file , protocol=pickle.HIGHEST_PROTOCOL)
     print('Saved data fields')
 
 def load_model( fullpath ): 
@@ -89,7 +89,15 @@ def load_mat_file( mat_fullpath, var_name='Psi_ts'):
     # loading .mat files, annoying bc the variable name is needed
     # usually we are loading stream function values, so default 
     # var_name to 'Psi_ts', but subject to change
-    mat = io.loadmat(mat_fullpath)[var_name]
+    try:
+        mat = io.loadmat(mat_fullpath)[var_name]
+    except NotImplementedError as e: 
+        print(e) 
+        import h5py
+        with h5py.File(mat_fullpath, 'r') as file:
+            mat = np.asarray(file['Psi_ts'])
+            mat = mat.reshape(mat.shape[2], mat.shape[1], mat.shape[0])
+            print(f'loaded mat file, shape: {mat.shape}')
     return mat 
 
 if __name__ == '__main__':

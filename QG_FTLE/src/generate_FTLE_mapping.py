@@ -32,8 +32,8 @@ def generate_mapping_files(iters, mapped_dt, dt, xct, yct, velocity_func_filenam
     # y-coordinate of the grid
     y_coords = np.linspace(shift,reduced_yct-shift,yct)
     # evolution time 0-10s, max_mapping_file_ct time steps maximum
-    max_mapping_file_ct = 1000
-    tau_range = np.linspace(0.0,99.9,max_mapping_file_ct)
+    max_mapping_file_ct = 1000000
+    tau_range = np.linspace(0.0,dt*(max_mapping_file_ct-1),max_mapping_file_ct)
     # x and y ranges for interp.velcoity_update() 
     x_range, y_range = (0.0, float(reduced_xct)), (0.0, float(reduced_yct) )
     # getting 100 mapping data files

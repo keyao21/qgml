@@ -64,7 +64,9 @@ def velocity_update(vfuncs, state, t, dt, x_range=(0.0,2.0), y_range=(0.0,2.0)):
     
     i = int(t/dt)  # get index of time t
     
-
+    if len(vfuncs[0]) <= i: 
+        raise Exception(f"""Error: t is too high or dt is too low. Implied too many time steps; int(t/dt)={i} time steps,
+                            but vfuncs[0] is {len(vfuncs[0])} long. """)
 
     try: 
         vxfunc, vyfunc = vfuncs[0][i], vfuncs[1][i]
