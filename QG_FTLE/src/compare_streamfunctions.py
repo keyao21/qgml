@@ -19,16 +19,22 @@ def compare_stream_functions(max_iters, sf_filenames):
             return
         sfs.append(sf)
     [sfest, sfactual] = sfs
-    mses = [ sum(sum((sfest[:,:,i]-sfactual[:,:,i])**2))
+    mses = [ sum(sum((abs(sfest[:,:,i]-sfactual[:,:,i]))))
             *(1./(sfactual.shape[0]*sfactual.shape[1])) \
                         for i in range(sfactual.shape[-1])]
-
+    
+    maxes = [ np.nanmax(abs(sfactual[:,:,i])) for i in range(sfactual.shape[-1]) ] 
+    mses_normalized = [ mses[i] / maxes[i] for i in range(sfactual.shape[-1]) ]
+    # mses_normalized = [mses[i] for i in range(sfactual.shape[-1])]
     data = {}
-    for i in range(1, int(np.floor(max_iters/100))):
-        upper_i = i*100
-        data[upper_i] = np.mean(mses[:upper_i])
+    gap = 1
+    for i in range(1, int(np.floor(max_iters/gap))):
+        upper_i = i*gap
+        # data[upper_i] = np.mean(mses_normalized[:upper_i])
+        data[i] = mses_normalized[i]
 
-    print( data ) 
+    # import pdb;pdb.set_trace() 
+    # print( data ) 
     return data
 
 

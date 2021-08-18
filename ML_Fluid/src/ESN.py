@@ -116,7 +116,7 @@ class EchoStateNetwork(object):
         self.r = np.zeros((1+self.inSize+self.resSize, self.trainLen-self.initLen+1)) 
 
         # Initialize data vectors 
-        self.u = self.data[self.initLen : self.trainLen]
+        self.u = self.data[ : self.trainLen]
         self.v_tgt = self.data[ self.initLen+1 : self.trainLen+1]
 
         # self.v = np.zeros((self.outSize, self.trainLen-self.initLen))
@@ -125,17 +125,21 @@ class EchoStateNetwork(object):
         # self.u += self.input_noise
 
         # Normalize reservoir matrix A by spectral radius
+        # import pdb;pdb.set_trace() 
         rhoW = max(abs(linalg.eig(self.A)[0]))
         self.A *= self.spectral_radius/rhoW
 
         # Sample training states (r) data
         self.r_t = np.zeros((self.resSize,1)) 
-        for t in range(self.trainLen-self.initLen):
+        t_ = 0 # initialize for recording t
+        for t in range(self.trainLen):
             self.r_t = self.leaking_rate*self.r_t \
                             + (1.0-self.leaking_rate)*np.tanh( np.dot(self.Win, np.vstack((1, self.u[t].reshape(self.inSize,1))) ) \
                                                              + np.dot( self.A, self.r_t) ) \
                             + self.noise*np.random.rand(self.resSize,1) #same shape as r_t
-            self.r[:,t+1] = np.vstack((1,self.u[t].reshape(self.inSize,1), self.r_t)).reshape(self.inSize+self.resSize+1)
+            if t >= self.initLen: 
+                self.r[:,t_+1] = np.vstack((1,self.u[t].reshape(self.inSize,1), self.r_t)).reshape(self.inSize+self.resSize+1)
+                t_ += 1
 
         # initialize PREDICTION reservoir state variable (to be used for esn.predict() method )
         self.predict_r_t_ = np.zeros((self.resSize, 1))  # initial PREDICTION reservoir state r_t
@@ -167,6 +171,7 @@ class EchoStateNetwork(object):
     def test(self, testing_data):
         """Test on actual data using trained model"""
         logging.info("Testing...")
+        # import pdb;pdb.set_trace()
 
         # Initialize test data vectors
         self.testLen = testing_data.shape[0]
@@ -202,6 +207,17 @@ class EchoStateNetwork(object):
                 # Forcing one dimension to be actual
                 self.v_[1,t+1] = self.v_tgt_.T[1,t+1]
             self.u_ = self.v_[:,t+1].T.reshape(1,self.outSize)
+
+        # TESTINGGGGGGGG
+        # import pdb;pdb.set_trace()
+        # self.v = np.dot(self.P, self.r[:,1:])
+        # plt.figure()
+        # plt.plot(np.abs(np.mean(self.v.T - self.v_tgt, 1)))
+        # import pdb;pdb.set_trace()
+        # plt.figure()
+        # plt.plot(np.abs(np.mean(self.v_.T[1:] - self.v_tgt_, 1)))
+        # TESTINGGGGGGGG
+
 
         # clean up variables 
         del( self.r_t_ )
